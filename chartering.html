@@ -1,0 +1,3732 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Chartering — Volans Maritime</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap');
+
+  :root {
+    --navy: #0a1628;
+    --navy2: #0f2040;
+    --blue: #1a3a6e;
+    --accent: #00a8e8;
+    --accent2: #00d4aa;
+    --gold: #f0b429;
+    --red: #e53e3e;
+    --green: #38a169;
+    --text: #e8edf5;
+    --text2: #8fa4c0;
+    --card: #0d1e38;
+    --border: #1e3a5f;
+    --input-bg: #071322;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Syne', sans-serif;
+    background: var(--navy);
+    color: var(--text);
+    min-height: 100vh;
+    background-image:
+      radial-gradient(ellipse at 10% 20%, rgba(0,168,232,0.06) 0%, transparent 50%),
+      radial-gradient(ellipse at 90% 80%, rgba(0,212,170,0.04) 0%, transparent 50%);
+  }
+
+  /* HEADER */
+  .header {
+    background: var(--navy2);
+    border-bottom: 1px solid var(--border);
+    padding: 14px 28px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    position: sticky; top: 0; z-index: 100;
+  }
+  .header-icon { font-size: 24px; }
+  .header h1 { font-size: 18px; font-weight: 800; letter-spacing: 2px; text-transform: uppercase; color: var(--accent); }
+  .header span { font-size: 12px; color: var(--text2); font-family: 'JetBrains Mono', monospace; }
+  .header-right { margin-left: auto; display: flex; gap: 10px; align-items: center; }
+  .btn-back { background: var(--blue); border: none; color: var(--text); padding: 7px 16px; border-radius: 6px; cursor: pointer; font-family: 'Syne', sans-serif; font-size: 13px; font-weight: 600; transition: background .2s; }
+  .btn-back:hover { background: var(--accent); color: #000; }
+
+  /* LAYOUT */
+  .container { max-width: 1200px; margin: 0 auto; padding: 28px 20px; }
+
+  /* TABS */
+  .tabs { display: flex; gap: 4px; margin-bottom: 28px; background: var(--card); padding: 6px; border-radius: 10px; border: 1px solid var(--border); width: fit-content; }
+  .tab { padding: 8px 22px; border-radius: 7px; cursor: pointer; font-size: 13px; font-weight: 600; letter-spacing: .5px; border: none; background: transparent; color: var(--text2); transition: all .2s; }
+  .tab.active { background: var(--accent); color: #000; }
+  .tab:hover:not(.active) { background: var(--blue); color: var(--text); }
+
+  /* PANEL */
+  .panel { display: none; }
+  .panel.active { display: block; }
+
+  /* SECTION TITLE */
+  .section-title {
+    font-size: 11px; font-weight: 700; letter-spacing: 2.5px; text-transform: uppercase;
+    color: var(--accent); margin-bottom: 14px; display: flex; align-items: center; gap: 8px;
+  }
+  .section-title::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+
+  /* CARD */
+  .card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 22px 24px;
+    margin-bottom: 20px;
+  }
+
+  /* FORM GRID */
+  .form-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 16px; }
+  .form-grid.cols2 { grid-template-columns: repeat(2, 1fr); }
+  .form-grid.cols3 { grid-template-columns: repeat(3, 1fr); }
+
+  .field { display: flex; flex-direction: column; gap: 6px; }
+  .field label { font-size: 11px; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; color: var(--text2); }
+  .field input, .field select, .field textarea {
+    background: var(--input-bg);
+    border: 1px solid var(--border);
+    color: var(--text);
+    padding: 9px 12px;
+    border-radius: 7px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    transition: border-color .2s;
+    width: 100%;
+  }
+  .field input:focus, .field select:focus, .field textarea:focus {
+    outline: none; border-color: var(--accent);
+  }
+  .field select option { background: var(--navy2); }
+  .field .hint { font-size: 10px; color: var(--text2); font-family: 'JetBrains Mono', monospace; }
+
+  /* CONDICIONES CLIENTE */
+  .clientes-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 14px; }
+  .cliente-card {
+    background: var(--input-bg);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 16px 18px;
+    position: relative;
+    transition: border-color .2s;
+  }
+  .cliente-card:hover { border-color: var(--accent); }
+  .cliente-card .cliente-nombre { font-size: 15px; font-weight: 700; color: var(--accent); margin-bottom: 10px; }
+  .cliente-card .cliente-row { display: flex; justify-content: space-between; font-size: 12px; margin-bottom: 6px; }
+  .cliente-card .cliente-row span:first-child { color: var(--text2); }
+  .cliente-card .cliente-row span:last-child { font-family: 'JetBrains Mono', monospace; color: var(--text); font-weight: 500; }
+  .btn-edit-cliente { position: absolute; top: 12px; right: 12px; background: var(--blue); border: none; color: var(--text2); padding: 4px 10px; border-radius: 5px; cursor: pointer; font-size: 11px; font-family: 'Syne', sans-serif; }
+  .btn-edit-cliente:hover { background: var(--accent); color: #000; }
+  .btn-add-cliente { background: transparent; border: 1px dashed var(--border); color: var(--text2); padding: 16px; border-radius: 10px; cursor: pointer; font-family: 'Syne', sans-serif; font-size: 13px; font-weight: 600; width: 100%; transition: all .2s; }
+  .btn-add-cliente:hover { border-color: var(--accent); color: var(--accent); }
+
+  /* CALCULO */
+  .calc-steps { display: flex; flex-direction: column; gap: 16px; }
+
+  .step-block {
+    background: var(--input-bg);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 18px 20px;
+  }
+  .step-header { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; }
+  .step-num { width: 26px; height: 26px; border-radius: 50%; background: var(--accent); color: #000; font-weight: 800; font-size: 12px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .step-title { font-size: 13px; font-weight: 700; color: var(--text); letter-spacing: .5px; }
+  .step-subtitle { font-size: 11px; color: var(--text2); margin-left: auto; font-family: 'JetBrains Mono', monospace; }
+
+  /* TIMELINE NOR */
+  .nor-timeline { display: flex; align-items: center; gap: 0; margin: 12px 0; overflow-x: auto; padding-bottom: 4px; }
+  .nor-event { display: flex; flex-direction: column; align-items: center; min-width: 100px; }
+  .nor-dot { width: 12px; height: 12px; border-radius: 50%; background: var(--accent); border: 2px solid var(--navy); position: relative; z-index: 1; }
+  .nor-dot.gold { background: var(--gold); }
+  .nor-dot.green { background: var(--green); }
+  .nor-dot.red { background: var(--red); }
+  .nor-line { flex: 1; height: 2px; background: var(--border); min-width: 40px; }
+  .nor-label { font-size: 10px; color: var(--text2); text-align: center; margin-top: 5px; font-family: 'JetBrains Mono', monospace; }
+  .nor-time { font-size: 11px; color: var(--text); font-family: 'JetBrains Mono', monospace; font-weight: 500; text-align: center; }
+
+  /* RESULTADO */
+  .resultado-box {
+    border-radius: 12px;
+    padding: 24px 28px;
+    margin-top: 10px;
+    border: 2px solid;
+    display: none;
+  }
+  .resultado-box.demurrage { border-color: var(--red); background: rgba(229,62,62,0.08); }
+  .resultado-box.despatch { border-color: var(--green); background: rgba(56,161,105,0.08); }
+  .resultado-box.even { border-color: var(--gold); background: rgba(240,180,41,0.08); }
+
+  .resultado-titulo { font-size: 22px; font-weight: 800; letter-spacing: 1px; margin-bottom: 6px; }
+  .resultado-box.demurrage .resultado-titulo { color: var(--red); }
+  .resultado-box.despatch .resultado-titulo { color: var(--green); }
+  .resultado-box.even .resultado-titulo { color: var(--gold); }
+
+  .resultado-monto { font-size: 36px; font-weight: 800; font-family: 'JetBrains Mono', monospace; margin: 8px 0; }
+  .resultado-detalle { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-top: 16px; padding-top: 16px; border-top: 1px solid rgba(255,255,255,0.1); }
+  .resultado-item label { font-size: 10px; text-transform: uppercase; letter-spacing: 1.5px; color: var(--text2); }
+  .resultado-item span { display: block; font-size: 16px; font-family: 'JetBrains Mono', monospace; font-weight: 600; color: var(--text); margin-top: 4px; }
+
+  /* HISTORIAL */
+  .hist-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  .hist-table th { text-align: left; padding: 10px 14px; font-size: 10px; text-transform: uppercase; letter-spacing: 1.5px; color: var(--text2); border-bottom: 1px solid var(--border); font-weight: 600; }
+  .hist-table td { padding: 12px 14px; border-bottom: 1px solid rgba(30,58,95,0.5); vertical-align: middle; }
+  .hist-table tr:hover td { background: rgba(0,168,232,0.04); }
+  .badge { display: inline-block; padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 700; font-family: 'JetBrains Mono', monospace; }
+  .badge.dem { background: rgba(229,62,62,0.2); color: var(--red); border: 1px solid rgba(229,62,62,0.3); }
+  .badge.desp { background: rgba(56,161,105,0.2); color: var(--green); border: 1px solid rgba(56,161,105,0.3); }
+  .badge.even { background: rgba(240,180,41,0.2); color: var(--gold); border: 1px solid rgba(240,180,41,0.3); }
+  .mono { font-family: 'JetBrains Mono', monospace; }
+
+  /* BUTTONS */
+  .btn-primary {
+    background: var(--accent); color: #000; border: none; padding: 10px 24px;
+    border-radius: 8px; font-family: 'Syne', sans-serif; font-size: 14px; font-weight: 700;
+    cursor: pointer; transition: all .2s; letter-spacing: .5px;
+  }
+  .btn-primary:hover { background: #00c4ff; transform: translateY(-1px); }
+  .btn-secondary {
+    background: var(--blue); color: var(--text); border: none; padding: 10px 20px;
+    border-radius: 8px; font-family: 'Syne', sans-serif; font-size: 13px; font-weight: 600;
+    cursor: pointer; transition: background .2s;
+  }
+  .btn-secondary:hover { background: #234d8a; }
+  .btn-danger {
+    background: rgba(229,62,62,0.15); color: var(--red); border: 1px solid rgba(229,62,62,0.3);
+    padding: 7px 14px; border-radius: 7px; font-family: 'Syne', sans-serif; font-size: 12px;
+    font-weight: 600; cursor: pointer; transition: all .2s;
+  }
+  .btn-danger:hover { background: rgba(229,62,62,0.3); }
+
+  .actions-row { display: flex; gap: 10px; align-items: center; margin-top: 18px; flex-wrap: wrap; }
+
+  /* MODAL */
+  .modal-overlay {
+    display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.7);
+    z-index: 1000; align-items: center; justify-content: center;
+  }
+  .modal-overlay.open { display: flex; }
+  .modal {
+    background: var(--card); border: 1px solid var(--border); border-radius: 14px;
+    padding: 28px; width: 90%; max-width: 500px; max-height: 90vh; overflow-y: auto;
+  }
+  .modal h3 { font-size: 16px; font-weight: 800; color: var(--accent); margin-bottom: 20px; letter-spacing: 1px; }
+  .modal-actions { display: flex; gap: 10px; margin-top: 20px; justify-content: flex-end; }
+
+  /* INFO BOX */
+  .info-box { background: rgba(0,168,232,0.08); border: 1px solid rgba(0,168,232,0.25); border-radius: 8px; padding: 12px 16px; font-size: 12px; color: var(--accent); display: flex; gap: 8px; }
+  .info-box.warn { background: rgba(240,180,41,0.08); border-color: rgba(240,180,41,0.25); color: var(--gold); }
+
+  /* EMPTY */
+  .empty { text-align: center; padding: 40px; color: var(--text2); font-size: 14px; }
+  .empty span { font-size: 32px; display: block; margin-bottom: 10px; }
+
+  /* TURNOS SELECT */
+  .turnos-list { display: flex; flex-direction: column; gap: 8px; max-height: 300px; overflow-y: auto; }
+  .turno-item {
+    display: flex; align-items: center; gap: 12px; padding: 10px 14px;
+    background: var(--input-bg); border: 1px solid var(--border); border-radius: 8px;
+    cursor: pointer; transition: border-color .2s;
+  }
+  .turno-item:hover { border-color: var(--accent); }
+  .turno-item input[type=radio] { accent-color: var(--accent); width: 16px; height: 16px; }
+  .turno-item-info { flex: 1; }
+  .turno-item-info .ti-title { font-size: 13px; font-weight: 600; }
+  .turno-item-info .ti-sub { font-size: 11px; color: var(--text2); font-family: 'JetBrains Mono', monospace; margin-top: 2px; }
+
+  /* RESUMEN RÁPIDO */
+  .kpi-row { display: flex; gap: 14px; flex-wrap: wrap; margin-bottom: 20px; }
+  .kpi-card { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 16px 20px; flex: 1; min-width: 140px; }
+  .kpi-card label { font-size: 10px; text-transform: uppercase; letter-spacing: 1.5px; color: var(--text2); }
+  .kpi-card .kpi-val { font-size: 22px; font-family: 'JetBrains Mono', monospace; font-weight: 700; margin-top: 5px; color: var(--text); }
+  .kpi-card .kpi-val.dem { color: var(--red); }
+  .kpi-card .kpi-val.desp { color: var(--green); }
+
+  /* NOR ADJUST BADGE */
+  .nor-adjust { display: inline-block; margin-left: 8px; padding: 2px 8px; border-radius: 4px; font-size: 10px; background: rgba(240,180,41,0.2); color: var(--gold); font-family: 'JetBrains Mono', monospace; }
+
+  /* LAYTIME PUERTO BLOCK */
+  .lt-puerto-block {
+    background: var(--card); border: 1px solid var(--border); border-radius: 12px;
+    margin-bottom: 20px; overflow: hidden;
+  }
+  .lt-puerto-header {
+    background: var(--navy2); padding: 14px 20px; display: flex; align-items: center;
+    gap: 12px; border-bottom: 1px solid var(--border); cursor: pointer;
+  }
+  .lt-puerto-icon { font-size: 20px; }
+  .lt-puerto-nombre { font-size: 15px; font-weight: 800; color: var(--text); }
+  .lt-puerto-tipo { font-size: 11px; color: var(--text2); font-family: 'JetBrains Mono', monospace; margin-left: 4px; }
+  .lt-puerto-rate { margin-left: auto; font-size: 12px; font-family: 'JetBrains Mono', monospace; color: var(--accent); }
+  .lt-puerto-body { padding: 20px; }
+
+  /* NOR RULES BOX */
+  .nor-rules-box {
+    background: rgba(0,168,232,0.06); border: 1px solid rgba(0,168,232,0.2);
+    border-radius: 8px; padding: 12px 16px; margin-bottom: 18px; font-size: 11px;
+    color: var(--accent); line-height: 1.7;
+  }
+  .nor-rules-box strong { color: var(--text); }
+
+  /* LAYTIME TIMELINE TABLE */
+  .lt-timeline { width: 100%; border-collapse: collapse; font-size: 12px; margin-top: 14px; }
+  .lt-timeline th { text-align: left; padding: 8px 12px; font-size: 10px; text-transform: uppercase; letter-spacing: 1.5px; color: var(--text2); border-bottom: 1px solid var(--border); }
+  .lt-timeline td { padding: 9px 12px; border-bottom: 1px solid rgba(30,58,95,0.4); vertical-align: middle; }
+  .lt-timeline .row-key { background: rgba(0,168,232,0.05); }
+  .lt-timeline .row-key td { color: var(--accent); font-weight: 700; }
+  .lt-timeline .row-exc td { color: var(--gold); }
+  .lt-timeline .row-total td:last-child { font-weight: 800; color: var(--text); }
+
+  /* RESULTADO PUERTO */
+  .lt-result-bar {
+    margin-top: 16px; padding: 14px 18px; border-radius: 8px; display: flex;
+    align-items: center; gap: 16px; flex-wrap: wrap;
+  }
+  .lt-result-bar.dem { background: rgba(229,62,62,0.1); border: 1px solid rgba(229,62,62,0.3); }
+  .lt-result-bar.desp { background: rgba(56,161,105,0.1); border: 1px solid rgba(56,161,105,0.3); }
+  .lt-result-bar.even { background: rgba(240,180,41,0.08); border: 1px solid rgba(240,180,41,0.2); }
+  .lt-result-label { font-size: 13px; font-weight: 700; }
+  .lt-result-bar.dem .lt-result-label { color: var(--red); }
+  .lt-result-bar.desp .lt-result-label { color: var(--green); }
+  .lt-result-bar.even .lt-result-label { color: var(--gold); }
+  .lt-result-monto { font-size: 22px; font-family: 'JetBrains Mono', monospace; font-weight: 800; margin-left: auto; }
+  .lt-result-bar.dem .lt-result-monto { color: var(--red); }
+  .lt-result-bar.desp .lt-result-monto { color: var(--green); }
+
+  /* RESUMEN TABLA */
+  .lt-resumen-table { width: 100%; border-collapse: collapse; }
+  .lt-resumen-table th { text-align: left; padding: 8px 14px; font-size: 10px; text-transform: uppercase; letter-spacing: 1.5px; color: var(--text2); border-bottom: 1px solid var(--border); }
+  .lt-resumen-table td { padding: 10px 14px; border-bottom: 1px solid rgba(30,58,95,0.4); font-size: 13px; }
+
+  /* SCENARIO CARDS */
+  .scenario-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 12px; }
+  .scenario-card {
+    background: var(--input-bg); border: 2px solid var(--border); border-radius: 10px;
+    padding: 16px; cursor: pointer; transition: all .2s; display: flex; gap: 14px; align-items: flex-start;
+  }
+  .scenario-card:hover { border-color: var(--accent); }
+  .scenario-card.selected { border-color: var(--accent); background: rgba(0,168,232,0.08); }
+  .scenario-card.selected .sc-num { background: var(--accent); color: #000; }
+  .sc-num { width: 28px; height: 28px; border-radius: 50%; background: var(--blue); color: var(--text); font-weight: 800; font-size: 13px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 2px; }
+  .sc-body { flex: 1; }
+  .sc-title { font-size: 14px; font-weight: 700; color: var(--text); margin-bottom: 6px; }
+  .sc-desc { font-size: 12px; color: var(--text2); line-height: 1.5; }
+  .sc-badge { display: inline-block; margin-top: 8px; padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 700; }
+  .sc-badge.no-pay { background: rgba(56,161,105,0.2); color: var(--green); border: 1px solid rgba(56,161,105,0.3); }
+  .sc-badge.full-pay { background: rgba(229,62,62,0.2); color: var(--red); border: 1px solid rgba(229,62,62,0.3); }
+  .sc-sub-grid { margin-top: 12px; padding-top: 10px; border-top: 1px solid var(--border); }
+  .sc-sub-label { font-size: 11px; color: var(--text2); margin-bottom: 8px; font-weight: 600; }
+  .radio-row { display: flex; gap: 16px; flex-wrap: wrap; }
+  .radio-opt { display: flex; align-items: center; gap: 6px; font-size: 12px; cursor: pointer; color: var(--text); }
+  .radio-opt input { accent-color: var(--accent); }
+
+  /* SCROLL */
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--blue); border-radius: 3px; }
+
+  /* RESPONSIVE */
+  @media (max-width: 640px) {
+    .form-grid.cols3 { grid-template-columns: 1fr 1fr; }
+    .resultado-detalle { grid-template-columns: 1fr 1fr; }
+    .kpi-row { flex-direction: column; }
+  }
+
+/* ── SAVE TOAST ── */
+#saveToast {
+  display:none;
+  position:fixed;
+  inset:0;
+  z-index:9999;
+  align-items:center;
+  justify-content:center;
+  pointer-events:none;
+}
+#saveToast.show { display:flex; }
+#saveToastInner {
+  background:rgba(10,20,40,0.92);
+  border:1px solid var(--cyan,#00bcd4);
+  border-radius:16px;
+  padding:28px 48px;
+  text-align:center;
+  animation: toastPop .18s ease;
+}
+#saveToastInner .toast-brand {
+  font-size:2rem;
+  font-weight:800;
+  letter-spacing:.25em;
+  color:var(--cyan,#00bcd4);
+  font-family:'Courier New',monospace;
+}
+#saveToastInner .toast-msg {
+  font-size:.8rem;
+  color:#aaa;
+  margin-top:6px;
+  letter-spacing:.1em;
+}
+@keyframes toastPop {
+  from { opacity:0; transform:scale(.85); }
+  to   { opacity:1; transform:scale(1); }
+}
+</style>
+</head>
+<body>
+<div id="saveToast">
+  <div id="saveToastInner">
+    <div class="toast-brand">VOLANS</div>
+    <div class="toast-msg" id="saveToastMsg">GUARDADO</div>
+  </div>
+</div>
+
+<!-- HEADER -->
+<div class="header">
+  <span class="header-icon">⚓</span>
+  <div>
+    <h1>Chartering</h1>
+    <span>Volans Maritime — Cálculo Demurrage / Despatch</span>
+  </div>
+  <div class="header-right">
+    <button class="btn-back" onclick="window.location.href='index.html'">← Sistema Principal</button>
+  </div>
+</div>
+
+<!-- CONTAINER -->
+<div class="container">
+
+  <!-- TABS -->
+  <div class="tabs">
+    <button class="tab active" onclick="setTab('calcular')">📊 Demurrage</button>
+    <button class="tab" onclick="setTab('laytime')">📋 Laytime / SOF</button>
+    <button class="tab" onclick="setTab('detention')">⏱ Detention</button>
+    <button class="tab" onclick="setTab('clientes')">🏢 Clientes</button>
+    <button class="tab" onclick="setTab('contratos')">📝 Contratos</button>
+    <button class="tab" onclick="setTab('historial')">🗂 Historial</button>
+  </div>
+
+  <!-- ══════════════════════════════════ TAB: LAYTIME / SOF ══════════════════════════════════ -->
+  <div id="panel-laytime" class="panel">
+
+    <!-- CABECERA VIAJE -->
+    <div class="card">
+      <div class="section-title">Identificación del Viaje</div>
+      <div class="form-grid cols3">
+        <div class="field">
+          <label>Nave</label>
+          <select id="ltNave" onchange="ltCargarEscalas()">
+            <option value="">— Seleccionar —</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Cliente / Contrato</label>
+          <select id="ltCargaTipo" onchange="ltActualizarPuertos()">
+            <option value="codelco_concentrado">Codelco — Concentrado Cobre</option>
+            <option value="codelco_catodos">Codelco — Cátodos Cobre</option>
+            <option value="bhp_concentrado">BHP — Concentrado Cobre</option>
+            <option value="kmp_harina">KMP — Harina de Pescado</option>
+            <option value="trafigura_concentrado_cobre">Trafigura — Concentrado Cobre</option>
+            <option value="trafigura_concentrado_zinc">Trafigura — Concentrado Zinc</option>
+            <option value="trafigura_grajales_zinc">Trafigura — Zinc Grajales (4,500 T/día · WWD SHINC)</option>
+            <option value="trafigura_grajales_zinc_antofagasta">Trafigura — Zinc Grajales Antofagasta (10,000 T/día · SHINC)</option>
+            <option value="trafigura_concs_antwerp_rio">Trafigura — Concs Antwerp→Rio de Janeiro (CP 19/05/2026)</option>
+            <option value="candelaria_coquimbo">Candelaria — Concentrado Cobre</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Demurrage Rate (USD/día)</label>
+          <input type="number" id="ltDemRate" value="18000" step="500">
+        </div>
+      </div>
+    </div>
+
+    <!-- PUERTOS — se generan dinámicamente -->
+    <div id="ltPuertosContainer"></div>
+
+    <!-- RESUMEN TOTAL VIAJE -->
+    <div id="ltResumenViaje" style="display:none">
+      <div class="card" style="border-color:var(--accent)">
+        <div class="section-title">Resumen Total Viaje — Non Reversible</div>
+        <div style="font-size:11px; color:var(--text2); margin-bottom:16px">Cada puerto se calcula por separado (non-reversible). No se compensan balances.</div>
+        <div id="ltResumenTabla"></div>
+        <div style="margin-top:20px; padding-top:16px; border-top:1px solid var(--border); display:flex; gap:20px; flex-wrap:wrap">
+          <div>
+            <div style="font-size:10px; text-transform:uppercase; letter-spacing:1.5px; color:var(--text2)">Total a Cobrar (Demurrage)</div>
+            <div style="font-size:28px; font-family:'JetBrains Mono',monospace; font-weight:800; color:var(--red)" id="ltTotalDem">USD 0</div>
+          </div>
+          <div>
+            <div style="font-size:10px; text-transform:uppercase; letter-spacing:1.5px; color:var(--text2)">Total a Pagar (Despatch)</div>
+            <div style="font-size:28px; font-family:'JetBrains Mono',monospace; font-weight:800; color:var(--green)" id="ltTotalDesp">USD 0</div>
+          </div>
+          <div>
+            <div style="font-size:10px; text-transform:uppercase; letter-spacing:1.5px; color:var(--text2)">Balance Neto</div>
+            <div style="font-size:28px; font-family:'JetBrains Mono',monospace; font-weight:800;" id="ltBalanceNeto">USD 0</div>
+          </div>
+        </div>
+        <div class="actions-row" style="margin-top:16px">
+          <button class="btn-primary" onclick="ltGuardarResumen()">💾 Guardar en Historial</button>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /panel-laytime -->
+
+  <!-- ══════════════════════════════════ TAB: CALCULAR ══════════════════════════════════ -->
+  <div id="panel-calcular" class="panel active">
+
+    <!-- KPI RESUMEN -->
+    <div class="kpi-row" id="kpiRow" style="display:none">
+      <div class="kpi-card">
+        <label>Laytime Permitido</label>
+        <div class="kpi-val" id="kpiAllowed">—</div>
+      </div>
+      <div class="kpi-card">
+        <label>Tiempo Usado</label>
+        <div class="kpi-val" id="kpiUsed">—</div>
+      </div>
+      <div class="kpi-card">
+        <label>Balance</label>
+        <div class="kpi-val" id="kpiBalance">—</div>
+      </div>
+      <div class="kpi-card">
+        <label>Monto</label>
+        <div class="kpi-val" id="kpiMonto">—</div>
+      </div>
+    </div>
+
+    <div class="calc-steps">
+
+      <!-- STEP 1: SELECCIONAR ESCALA -->
+      <div class="step-block">
+        <div class="step-header">
+          <div class="step-num">1</div>
+          <div class="step-title">Seleccionar Escala</div>
+        </div>
+        <div class="form-grid cols3">
+          <div class="field">
+            <label>Nave</label>
+            <select id="selNave" onchange="cargarEscalas()">
+              <option value="">— Seleccionar —</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>Viaje / Escala</label>
+            <select id="selEscala" onchange="cargarDatosEscala()">
+              <option value="">— Seleccionar —</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>Tipo Operación</label>
+            <select id="selTipoOp" onchange="actualizarCondiciones()">
+              <option value="descarga">Descarga (SHINC — Destino)</option>
+              <option value="embarque">Embarque (SHINC — Origen)</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <!-- STEP 2: CONDICIONES -->
+      <div class="step-block">
+        <div class="step-header">
+          <div class="step-num">2</div>
+          <div class="step-title">Condiciones Charter</div>
+          <span class="step-subtitle" id="condTipoLabel">SHINC · 12h libres · NOR horario oficina</span>
+        </div>
+        <div class="form-grid">
+          <div class="field">
+            <label>Cliente</label>
+            <select id="selCliente" onchange="cargarCondCliente()">
+              <option value="manual">Manual</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>Demurrage Rate (USD/día)</label>
+            <input type="number" id="demurrageRate" value="25000" step="500" oninput="sincDespatch()">
+          </div>
+          <div class="field">
+            <label>Despatch Rate (USD/día)</label>
+            <input type="number" id="despatchRate" value="12500" step="500">
+            <span class="hint">Automático: 50% del demurrage</span>
+          </div>
+          <div class="field">
+            <label>Horas Libres (Laytime)</label>
+            <input type="number" id="horasLibres" value="12" step="0.5">
+          </div>
+          <div class="field" id="fieldTasaCargaManual" style="display:none">
+            <label>Tasa Carga (T/día)</label>
+            <input type="number" id="tasaCargaManual" value="0" step="100" placeholder="Ej: 5000">
+            <span class="hint">Laytime carga = Tonelaje ÷ Tasa</span>
+          </div>
+          <div class="field" id="fieldTasaDescargaManual" style="display:none">
+            <label>Tasa Descarga (T/día)</label>
+            <input type="number" id="tasaDescargaManual" value="0" step="100" placeholder="Ej: 4000">
+            <span class="hint">Laytime descarga = Tonelaje ÷ Tasa</span>
+          </div>
+          <div class="field">
+            <label>Tasa Contractual (T/día)</label>
+            <input type="number" id="tasaContratada" value="0" step="100" placeholder="Ej: 1500" oninput="calcRendimientoVsContrato()">
+            <span class="hint">Según C/P — editable por escala</span>
+          </div>
+          <div class="field">
+            <label>Tasa Operacional Real (T/día)</label>
+            <input type="number" id="tasaOperacional" value="0" step="100" placeholder="Auto desde turnos" oninput="calcRendimientoVsContrato()">
+            <span class="hint" id="hintTasaOp">Calculada automáticamente desde turnos</span>
+          </div>
+        </div>
+        <!-- Panel resultado rendimiento vs contrato -->
+        <div id="panelRendVsContrato" style="display:none;margin-top:12px;padding:12px 16px;border-radius:8px;border:1.5px solid var(--border);background:var(--bg2)">
+          <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--accent);margin-bottom:8px">📊 Rendimiento vs Contrato</div>
+          <div id="rendVsContratoHtml" style="font-size:13px"></div>
+        </div>
+      </div>
+
+      <!-- STEP 3: NOR -->
+      <div class="step-block">
+        <div class="step-header">
+          <div class="step-num">3</div>
+          <div class="step-title">Notice of Readiness (NOR)</div>
+        </div>
+        <div class="form-grid cols2">
+          <div class="field">
+            <label>Fecha/Hora NOR Tendered</label>
+            <input type="datetime-local" id="norTendered" oninput="calcularNorAceptada()">
+            <span class="hint" id="norHint"></span>
+          </div>
+          <div class="field">
+            <label>NOR Aceptada (automático)</label>
+            <input type="datetime-local" id="norAceptada" readonly style="opacity:.7">
+            <span class="hint" id="norAjuste" style="color:var(--gold)"></span>
+          </div>
+        </div>
+
+        <!-- Timeline NOR -->
+        <div class="nor-timeline" id="norTimeline" style="display:none; margin-top:16px;">
+          <div class="nor-event">
+            <div class="nor-dot" id="dot1"></div>
+            <div class="nor-label">NOR Tendered</div>
+            <div class="nor-time" id="tlNorT">—</div>
+          </div>
+          <div class="nor-line"></div>
+          <div class="nor-event">
+            <div class="nor-dot gold" id="dot2"></div>
+            <div class="nor-label">NOR Aceptada</div>
+            <div class="nor-time" id="tlNorA">—</div>
+          </div>
+          <div class="nor-line"></div>
+          <div class="nor-event">
+            <div class="nor-dot green" id="dot3"></div>
+            <div class="nor-label">Laytime Start</div>
+            <div class="nor-time" id="tlLayStart">—</div>
+          </div>
+          <div class="nor-line"></div>
+          <div class="nor-event">
+            <div class="nor-dot green" id="dot4"></div>
+            <div class="nor-label">First Hook</div>
+            <div class="nor-time" id="tlFirstHook">—</div>
+          </div>
+          <div class="nor-line"></div>
+          <div class="nor-event">
+            <div class="nor-dot red" id="dot5"></div>
+            <div class="nor-label">Last Hook</div>
+            <div class="nor-time" id="tlLastHook">—</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- STEP 4: TURNOS -->
+      <div class="step-block">
+        <div class="step-header">
+          <div class="step-num">4</div>
+          <div class="step-title">Datos de Operación</div>
+          <span class="step-subtitle" id="turnosSubtitle">desde turnos registrados</span>
+        </div>
+
+        <div id="turnosAutoInfo" class="info-box" style="margin-bottom:14px; display:none">
+          ℹ️ Se usarán los turnos registrados para esta escala. First Hook y Last Hook calculados automáticamente.
+        </div>
+
+        <div class="form-grid cols2">
+          <div class="field">
+            <label>First Hook <span style="color:var(--text2);font-size:10px">(inicio operaciones)</span></label>
+            <input type="datetime-local" id="firstHook" oninput="actualizarTimeline()">
+          </div>
+          <div class="field">
+            <label>Last Hook <span style="color:var(--text2);font-size:10px">(fin operaciones)</span></label>
+            <input type="datetime-local" id="lastHook" oninput="actualizarTimeline()">
+          </div>
+        </div>
+
+        <!-- Hooks por cliente BHP/Codelco -->
+        <div id="hooksClientesBox" style="display:none;margin-top:14px;padding:12px 16px;background:rgba(0,168,232,0.06);border:1px solid rgba(0,168,232,0.2);border-radius:8px">
+          <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--accent);margin-bottom:10px">First Hook / Last Hook por Contrato</div>
+          <div id="hooksClientesRows"></div>
+          <div style="font-size:10px;color:var(--text2);margin-top:8px">ℹ Calculado desde cuadrillas registradas. Solo informativo para medición de rendimiento.</div>
+        </div>
+
+        <div id="turnosDetalle" style="margin-top:14px; display:none">
+          <div class="section-title" style="margin-top:0">Detenciones excluidas del tiempo</div>
+          <div id="turnosDetencionesLista"></div>
+        </div>
+
+        <div class="form-grid cols2" style="margin-top:14px">
+          <div class="field">
+            <label>Detenciones excluibles (min) <span style="color:var(--text2);font-size:10px">FIOST</span></label>
+            <input type="number" id="detExcluidas" value="0" step="1">
+            <span class="hint" id="detHint">SHINC: no se excluye nada. FIOST: excluye tiempos de estiba.</span>
+          </div>
+          <div class="field">
+            <label>Tonelaje Total Operado (T)</label>
+            <input type="number" id="totalTon" value="0" step="100">
+          </div>
+        </div>
+      </div>
+
+      <!-- ACCIONES -->
+      <div class="actions-row">
+        <button class="btn-primary" onclick="calcular()">⚡ Calcular Demurrage / Despatch</button>
+        <button class="btn-secondary" onclick="limpiarCalculo()">↺ Limpiar</button>
+      </div>
+
+      <!-- RESULTADO -->
+      <div class="resultado-box" id="resultadoBox">
+        <div style="display:flex; align-items:flex-start; justify-content:space-between; flex-wrap:wrap; gap:12px;">
+          <div>
+            <div class="resultado-titulo" id="resultTitulo"></div>
+            <div style="font-size:13px; color:var(--text2); margin-top:2px" id="resultSubtitulo"></div>
+            <div class="resultado-monto" id="resultMonto"></div>
+          </div>
+          <button class="btn-secondary" onclick="guardarCalculo()" style="align-self:flex-start">💾 Guardar en Historial</button>
+        </div>
+        <div class="resultado-detalle">
+          <div class="resultado-item">
+            <label>Laytime Permitido</label>
+            <span id="resLaytime"></span>
+          </div>
+          <div class="resultado-item">
+            <label>Tiempo Usado</label>
+            <span id="resTiempoUsado"></span>
+          </div>
+          <div class="resultado-item">
+            <label>Balance</label>
+            <span id="resBalance"></span>
+          </div>
+          <div class="resultado-item">
+            <label>NOR Aceptada</label>
+            <span id="resNorAc"></span>
+          </div>
+          <div class="resultado-item">
+            <label>Laytime Start</label>
+            <span id="resLayStart"></span>
+          </div>
+          <div class="resultado-item">
+            <label>Rate (USD/día)</label>
+            <span id="resRate"></span>
+          </div>
+        </div>
+        <!-- Explicación narrativa -->
+        <div id="resultExplicacion" style="margin-top:16px;padding:14px 16px;background:var(--bg2);border-radius:8px;border-left:3px solid var(--accent);font-size:13px;line-height:1.7;color:var(--text2)"></div>
+      </div>
+
+    </div><!-- /calc-steps -->
+  </div><!-- /panel calcular -->
+
+  <!-- ══════════════════════════════════ TAB: CLIENTES ══════════════════════════════════ -->
+  <div id="panel-clientes" class="panel">
+    <div class="card">
+      <div class="section-title">Condiciones por Cliente</div>
+      <p style="font-size:13px; color:var(--text2); margin-bottom:18px">
+        Defina las condiciones charter predeterminadas por cliente. Al seleccionar un cliente en el cálculo, se cargan automáticamente.
+      </p>
+      <div class="clientes-grid" id="clientesGrid">
+        <!-- se renderiza via JS -->
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════ TAB: HISTORIAL ══════════════════════════════════ -->
+  <div id="panel-contratos" class="panel">
+    <div class="card" style="margin-bottom:16px;border-left:3px solid var(--accent2,#22c55e)">
+      <div class="section-title" style="display:flex;align-items:center;justify-content:space-between">
+        <span>➕ Nuevo Contrato</span>
+        <button class="btn" id="nc-toggle-btn" onclick="ltNCToggle()">Abrir formulario</button>
+      </div>
+      <div id="nc-form" style="display:none">
+        <p style="color:var(--text2);font-size:12px;margin-bottom:12px">Crea un contrato completo sin tocar código: condiciones de laytime, demurrage/despatch, detention y puertos con su regla NOR. Al guardarlo queda disponible de inmediato en los cálculos.</p>
+        <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin-bottom:12px">
+          <div class="field"><label>Nombre del contrato *</label><input type="text" id="nc_label" placeholder="Ej: Candelaria — Coquimbo→Brunsbüttel"></div>
+          <div class="field"><label>Cliente</label><input type="text" id="nc_cliente" placeholder="Ej: Teck Candelaria"></div>
+          <div class="field"><label>Producto</label><input type="text" id="nc_producto" placeholder="Ej: Concentrado Cobre"></div>
+          <div class="field"><label>Condición</label><input type="text" id="nc_condicion" placeholder="Ej: FIOST · SHINC"></div>
+          <div class="field"><label>Demurrage (USD/día)</label><input type="number" id="nc_demRate" value="18000" step="500"></div>
+          <div class="field"><label>Despatch (USD/día)</label><input type="number" id="nc_despRate" placeholder="vacío = mitad dem." step="500"></div>
+          <div class="field"><label>Detention origen (h)</label><input type="number" id="nc_det_origen" value="0" step="6"></div>
+          <div class="field"><label>Detention destino (h)</label><input type="number" id="nc_det_destino" value="0" step="6"></div>
+          <div class="field"><label>% laytime en huelga</label><input type="number" id="nc_pct_huelga" value="50" step="10"></div>
+          <div class="field"><label>% laytime mal tiempo</label><input type="number" id="nc_pct_clima" value="0" step="10"></div>
+        </div>
+        <div class="field" style="margin-bottom:12px"><label style="display:flex;align-items:center;gap:8px;cursor:pointer;text-transform:none;letter-spacing:0"><input type="checkbox" id="nc_gira_no_cuenta" style="width:auto"> El tiempo en gira NO cuenta como laytime (cláusula expresa "time lost vacating berth not to count")</label></div>
+        <div class="field" style="margin-bottom:12px"><label>Exclusiones laytime</label>
+          <textarea id="nc_exclusiones" style="width:100%;min-height:50px;background:var(--bg2);color:var(--text);border:1px solid var(--border);border-radius:6px;padding:8px;font-size:12px" placeholder="Ej: Mal tiempo no cuenta · Huelga 50% después de 48h · Feriados legales UU"></textarea></div>
+        <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--accent);margin:8px 0">Puertos del contrato</div>
+        <div id="nc-puertos"></div>
+        <div style="display:flex;gap:8px;margin-top:12px;flex-wrap:wrap">
+          <button class="btn" onclick="ltNCAgregarPuerto('carga')">➕ Puerto de carga</button>
+          <button class="btn" onclick="ltNCAgregarPuerto('descarga')">➕ Puerto de descarga</button>
+          <button class="btn btn-g" style="margin-left:auto" onclick="ltNCGuardar()">💾 Crear contrato</button>
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="section-title" style="display:flex;align-items:center;justify-content:space-between">
+        <span>📝 Editor de Contratos</span>
+        <button class="btn btn-g" onclick="ltGuardarContratos()">💾 Guardar cambios</button>
+      </div>
+      <p style="color:var(--text2);font-size:12px;margin-bottom:16px">Modifica las condiciones de cada contrato. Los cambios se guardan en el navegador y aplican inmediatamente al cálculo de laytime.</p>
+      <div id="contratos-editor-grid"></div>
+    </div>
+  </div>
+
+  <div id="panel-historial" class="panel">
+    <div class="card">
+      <div class="section-title">Historial de Cálculos</div>
+      <div id="historialContainer">
+        <div class="empty"><span>📋</span>No hay cálculos guardados aún</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════ TAB: DETENTION ══════════════════════════════════ -->
+  <div id="panel-detention" class="panel">
+
+    <!-- SELECTOR CLIENTE -->
+    <div class="card" style="margin-bottom:20px">
+      <div class="section-title">Configuración Detention</div>
+      <div class="form-grid cols3" style="margin-bottom:14px">
+        <div class="field">
+          <label>Nave</label>
+          <select id="detNave" onchange="renderDetentionForm()">
+            <option value="">— Seleccionar nave —</option>
+            <option value="Cóndor Magallanes">🚢 Cóndor Magallanes</option>
+            <option value="Cóndor Valparaíso">🚢 Cóndor Valparaíso</option>
+            <option value="Cóndor Bilbao">🚢 Cóndor Bilbao</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>N° Viaje</label>
+          <input type="text" id="detViaje" placeholder="Ej: 2602" oninput="renderDetentionForm()">
+        </div>
+        <div class="field">
+          <label>Puerto</label>
+          <input type="text" id="detPuerto" placeholder="Ej: Angamos" oninput="renderDetentionForm()">
+        </div>
+      </div>
+      <div class="form-grid cols3">
+        <div class="field">
+          <label>Cliente</label>
+          <select id="detCliente" onchange="renderDetentionForm()">
+            <option value="BHP">BHP</option>
+            <option value="Codelco">Codelco</option>
+            <option value="Candelaria">Candelaria (Teck)</option>
+            <option value="KMP">KMP — Fish Meal</option>
+            <option value="Trafigura">Trafigura</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Tipo Puerto</label>
+          <select id="detTipoPuerto" onchange="renderDetentionForm()">
+            <option value="origen">Origen (Carga)</option>
+            <option value="destino">Destino (Descarga)</option>
+          </select>
+        </div>
+        <div class="field">
+          <label>Tasa Detention (USD/día)</label>
+          <input type="number" id="detRate" value="18000" step="500">
+          <span class="hint">Box 14 del contrato</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- DATOS ARRIBO -->
+    <div class="card" style="margin-bottom:20px">
+      <div class="section-title">Datos de Arribo</div>
+      <div class="form-grid cols3">
+        <div class="field">
+          <label>Fecha/Hora Arribo (ATA)</label>
+          <input type="datetime-local" id="detArribo" oninput="calcularDetention()">
+        </div>
+        <div class="field">
+          <label>Fecha/Hora All Fast (Atraque)</label>
+          <input type="datetime-local" id="detAllFast" oninput="calcularDetention()">
+          <span class="hint">Cuando la nave queda amarrada al muelle</span>
+        </div>
+        <div class="field">
+          <label id="detTonClienteLabel">Tonelaje cliente en este puerto (T)</label>
+          <input type="number" id="detTonCliente" value="0" step="100" oninput="calcularDetention()">
+        </div>
+      </div>
+      <div class="form-grid cols2" style="margin-top:14px" id="detTonTotalRow">
+        <div class="field">
+          <label>Tonelaje TOTAL en este puerto (T)</label>
+          <input type="number" id="detTonTotal" value="0" step="100" oninput="calcularDetention()">
+          <span class="hint">Para cálculo pro rata con otros cargadores</span>
+        </div>
+        <div class="field">
+          <label>Horas Libres (Grace Period)</label>
+          <input type="number" id="detHorasLibres" value="48" step="1" readonly style="opacity:.7">
+          <span class="hint" id="detHorasHint">BHP Origen: 48h · Destino: 24h</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ESCENARIO -->
+    <div class="card" style="margin-bottom:20px">
+      <div class="section-title" id="detScenarioTitle">Escenario de Arribo — BHP</div>
+
+      <!-- ESCENARIOS BHP -->
+      <div id="scenariosBHP">
+        <p style="font-size:12px; color:var(--text2); margin-bottom:16px">Seleccione el escenario que corresponde según las condiciones al arribo:</p>
+
+        <div class="scenario-grid" id="scenarioBHPGrid">
+
+          <div class="scenario-card" id="sc-bhp-1" onclick="selScenario('bhp-1')">
+            <div class="sc-num">A</div>
+            <div class="sc-body">
+              <div class="sc-title">Puerto Congestionado</div>
+              <div class="sc-desc">La nave arriba y el puerto está congestionado (sin muelle disponible). Detention a tasa completa pro rata por tonelaje BHP.</div>
+              <div class="sc-sub-grid" id="bhp1-weather-row">
+                <div class="sc-sub-label">¿Posteriormente cierra por clima/swell?</div>
+                <div class="radio-row">
+                  <label class="radio-opt"><input type="radio" name="bhp1w" value="no" checked onchange="calcularDetention()"> No</label>
+                  <label class="radio-opt"><input type="radio" name="bhp1w" value="si" onchange="calcularDetention()"> Sí → 50% tasa por días cierre</label>
+                </div>
+                <div id="bhp1-weather-hrs" style="display:none; margin-top:8px">
+                  <div class="field">
+                    <label>Horas de cierre por clima</label>
+                    <input type="number" id="bhp1WeatherHrs" value="0" step="1" oninput="calcularDetention()" style="max-width:160px">
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="scenario-card" id="sc-bhp-2" onclick="selScenario('bhp-2')">
+            <div class="sc-num">B</div>
+            <div class="sc-body">
+              <div class="sc-title">Puerto Cerrado — Clima / Swell</div>
+              <div class="sc-desc">La nave arriba y el puerto está cerrado por mal tiempo o swell. Detention al 50% de la tasa, pro rata por tonelaje BHP.</div>
+            </div>
+          </div>
+
+          <div class="scenario-card" id="sc-bhp-3" onclick="selScenario('bhp-3')">
+            <div class="sc-num">C</div>
+            <div class="sc-body">
+              <div class="sc-title">Carga BHP No Lista (solo BHP)</div>
+              <div class="sc-desc">La nave arriba al puerto de carga y únicamente la carga BHP no está lista. Detention al 100% pagada por BHP.</div>
+            </div>
+          </div>
+
+          <div class="scenario-card" id="sc-bhp-4" onclick="selScenario('bhp-4')">
+            <div class="sc-num">D</div>
+            <div class="sc-body">
+              <div class="sc-title">Solo Carga No-BHP No Lista</div>
+              <div class="sc-desc">La nave arriba y solo la carga de otros cargadores no está lista (carga BHP sí está). BHP NO paga detention, aunque luego cierre por clima o haya congestión.</div>
+              <div class="sc-badge no-pay">BHP no paga</div>
+            </div>
+          </div>
+
+          <div class="scenario-card" id="sc-bhp-5" onclick="selScenario('bhp-5')">
+            <div class="sc-num">E</div>
+            <div class="sc-body">
+              <div class="sc-title">BHP y No-BHP No Listos</div>
+              <div class="sc-desc">La nave arriba al puerto de carga y tanto la carga BHP como otros cargadores no están listos. Detention pro rata entre responsables por tonelaje.</div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- ESCENARIOS CODELCO -->
+      <div id="scenariosCodelco" style="display:none">
+        <p style="font-size:12px; color:var(--text2); margin-bottom:16px">Seleccione el escenario que corresponde según las condiciones al arribo:</p>
+
+        <div class="scenario-grid" id="scenarioCodelcoGrid">
+
+          <div class="scenario-card" id="sc-cdlc-1" onclick="selScenario('cdlc-1')">
+            <div class="sc-num">A</div>
+            <div class="sc-body">
+              <div class="sc-title">Congestión o Carga No Lista 100%</div>
+              <div class="sc-desc">Puerto congestionado o carga no disponible al 100%. Detention a tasa completa después de 24h de gracia. Aplica también si posteriormente cierra por clima.</div>
+            </div>
+          </div>
+
+          <div class="scenario-card" id="sc-cdlc-2" onclick="selScenario('cdlc-2')">
+            <div class="sc-num">B</div>
+            <div class="sc-body">
+              <div class="sc-title">Puerto Cerrado — Clima / Swell</div>
+              <div class="sc-desc">El puerto está cerrado por mal tiempo o swell. Detention al 50% después de 24h de gracia.</div>
+            </div>
+          </div>
+
+          <div class="scenario-card" id="sc-cdlc-3" onclick="selScenario('cdlc-3')">
+            <div class="sc-num">C</div>
+            <div class="sc-body">
+              <div class="sc-title">Congestión/Carga → luego Cierra por Clima</div>
+              <div class="sc-desc">Puerto congestionado o carga no lista, y luego el puerto cierra por clima. Detention a tasa COMPLETA durante todo el periodo (incluyendo cierre climático). Después de 24h de gracia.</div>
+              <div class="sc-badge full-pay">Tasa completa siempre</div>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Campos extra Codelco -->
+        <div id="codelco-weather-block" style="display:none; margin-top:16px">
+          <div class="field" style="max-width:260px">
+            <label>Horas de cierre por clima (dentro del periodo)</label>
+            <input type="number" id="cdlcWeatherHrs" value="0" step="1" oninput="calcularDetention()">
+            <span class="hint">Solo para escenario B — se cobra al 50%</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- ESCENARIOS GENÉRICOS: Candelaria, KMP, Trafigura -->
+    <div id="scenariosGenerico" style="display:none">
+      <p style="font-size:12px; color:var(--text2); margin-bottom:16px">Seleccione el escenario según las condiciones al arribo:</p>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:12px">
+        <div class="scenario-card" id="sc-G1" onclick="selScenario('G1')">
+          <div class="sc-letter">A</div>
+          <div class="sc-content">
+            <div class="sc-title">Puerto Congestionado / Sin Muelle</div>
+            <div class="sc-desc">La nave arriba y no hay muelle disponible. Detention a tasa completa desde ATA hasta All Fast.</div>
+          </div>
+        </div>
+        <div class="scenario-card" id="sc-G2" onclick="selScenario('G2')">
+          <div class="sc-letter">B</div>
+          <div class="sc-content">
+            <div class="sc-title">Puerto Cerrado — Clima / Mal Tiempo</div>
+            <div class="sc-desc">El puerto está cerrado por mal tiempo o swell. Según contrato, el mal tiempo no cuenta como laytime pero sí genera detention.</div>
+          </div>
+        </div>
+        <div class="scenario-card" id="sc-G3" onclick="selScenario('G3')">
+          <div class="sc-letter">C</div>
+          <div class="sc-content">
+            <div class="sc-title">Carga No Lista</div>
+            <div class="sc-desc">La nave arriba y la carga no está lista para embarque. Detention a tasa completa pagada por el cargador.</div>
+          </div>
+        </div>
+        <div class="scenario-card" id="sc-G4" onclick="selScenario('G4')">
+          <div class="sc-letter">D</div>
+          <div class="sc-content">
+            <div class="sc-title">Huelga / Strike</div>
+            <div class="sc-desc">Paralización por huelga. Según contrato: 50% de la tasa después de 48h continuas de huelga.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+<!-- RESULTADO DETENTION -->
+    <div class="resultado-box" id="detResultBox" style="display:none">
+      <div style="display:flex; align-items:flex-start; justify-content:space-between; flex-wrap:wrap; gap:12px">
+        <div>
+          <div class="resultado-titulo" id="detResTitulo"></div>
+          <div style="font-size:13px; color:var(--text2); margin-top:2px" id="detResSubtitulo"></div>
+          <div class="resultado-monto" id="detResMonto"></div>
+        </div>
+        <button class="btn-secondary" onclick="guardarDetention()">💾 Guardar en Historial</button>
+      </div>
+      <div class="resultado-detalle" id="detResDetalle"></div>
+    </div>
+
+  </div><!-- /panel-detention -->
+
+</div><!-- /container -->
+
+<!-- MODAL CLIENTE -->
+<div class="modal-overlay" id="modalCliente">
+  <div class="modal">
+    <h3 id="modalClienteTitulo">➕ Nuevo Cliente</h3>
+    <div class="field" style="margin-bottom:14px">
+      <label>Nombre Cliente</label>
+      <input type="text" id="mcNombre" placeholder="Ej: Codelco, BHP, Antofagasta Minerals">
+    </div>
+    <div style="margin-bottom:10px; font-size:12px; font-weight:700; color:var(--accent); letter-spacing:1px; text-transform:uppercase">Embarque (Origen — SHINC)</div>
+    <div class="form-grid cols2" style="margin-bottom:16px">
+      <div class="field">
+        <label>Horas Libres Origen</label>
+        <input type="number" id="mcHorasOrigen" value="24" step="0.5">
+      </div>
+      <div class="field">
+        <label>Demurrage (USD/día)</label>
+        <input type="number" id="mcDemOrigen" value="25000" step="500">
+      </div>
+    </div>
+    <div style="margin-bottom:10px; font-size:12px; font-weight:700; color:var(--accent2); letter-spacing:1px; text-transform:uppercase">Descarga (Destino — SHINC)</div>
+    <div class="form-grid cols2" style="margin-bottom:16px">
+      <div class="field">
+        <label>Horas Libres Destino</label>
+        <input type="number" id="mcHorasDestino" value="12" step="0.5">
+      </div>
+      <div class="field">
+        <label>Demurrage (USD/día)</label>
+        <input type="number" id="mcDemDestino" value="25000" step="500">
+      </div>
+    </div>
+    <div class="field" style="margin-bottom:4px">
+      <label>Notas</label>
+      <textarea id="mcNotas" rows="2" style="resize:vertical" placeholder="Cláusulas especiales, observaciones..."></textarea>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-secondary" onclick="cerrarModalCliente()">Cancelar</button>
+      <button class="btn-primary" onclick="guardarCliente()">Guardar</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ── GUARD DE ACCESO ──────────────────────────────
+(function(){
+  const s = JSON.parse(sessionStorage.getItem('volans_sesion')||'null');
+  if(!s || !['admin','gerente'].includes(s.rol)){
+    alert('Acceso restringido. Solo gerentes y administradores.');
+    window.location.href = 'index.html';
+  }
+})();
+</script>
+<script>
+// ═══════════════════════════════════════════════
+// STORAGE KEYS
+// ═══════════════════════════════════════════════
+const LS_CLIENTES = 'vms_charter_clientes';
+const LS_HISTORIAL = 'vms_charter_historial';
+const LS_NAVES = 'vms_naves';
+const LS_VIAJES = 'vms_viajes';
+const LS_TURNOS = 'vms_turnos';
+
+// ═══════════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════════
+let currentCalc = null;
+let editingClienteId = null;
+
+// ═══════════════════════════════════════════════
+// EDITOR DE CONTRATOS
+// ═══════════════════════════════════════════════
+const CONTRATOS_PRINCIPALES = ['codelco_angamos','bhp_angamos','candelaria_coquimbo','kmp_harina','trafigura_zinc'];
+
+function renderContratosEditor() {
+  const el = document.getElementById('contratos-editor-grid');
+  if (!el) return;
+  const cfg = ltGetContratos();
+  const customKeys = Object.keys(cfg).filter(k => cfg[k] && cfg[k].custom && CONTRATOS_PRINCIPALES.indexOf(k) === -1);
+  const editorKeys = CONTRATOS_PRINCIPALES.concat(customKeys);
+  el.innerHTML = editorKeys.map(key => {
+    const c = cfg[key] || LT_CONTRATOS_BASE[key];
+    if (!c) return '';
+    const btnEliminar = c.custom ? `<button class="btn btn-r" onclick="ltEliminarContrato('${key}')">🗑 Eliminar contrato</button>` : '';
+    return `<div class="card" style="margin-bottom:16px;border-left:3px solid var(--accent)">
+      <div style="font-size:14px;font-weight:700;color:var(--accent);margin-bottom:12px;display:flex;justify-content:space-between;align-items:center;gap:8px"><span>${c.label}</span>${btnEliminar}</div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px">
+        <div class="field"><label>Dem. Rate (USD/día)</label>
+          <input type="number" id="ct_${key}_demRate" value="${c.demRate||0}" step="500"></div>
+        <div class="field"><label>Despatch Rate (USD/día)</label>
+          <input type="number" id="ct_${key}_despRate" value="${c.despRate||''}" step="500" placeholder="n/a (mitad dem.)"></div>
+        <div class="field"><label>Detention origen (horas)</label>
+          <input type="number" id="ct_${key}_det_origen" value="${c.detention_origen_h||0}" step="6"></div>
+        <div class="field"><label>Detention destino (horas)</label>
+          <input type="number" id="ct_${key}_det_destino" value="${c.detention_destino_h||0}" step="6"></div>
+        <div class="field"><label>Tasa carga (T/día)</label>
+          <input type="text" id="ct_${key}_tasa_carga" value="${c.tasa_carga||c.puertos?.find(p=>p.tipo==='carga')?.tasa||0}" placeholder="Ej: 6000 o CQD"></div>
+        <div class="field"><label>Tasa descarga (T/día)</label>
+          <input type="text" id="ct_${key}_tasa_desc" value="${c.tasa_descarga||c.puertos?.find(p=>p.tipo==='descarga')?.tasa||0}" placeholder="Ej: 4500 o CQD"></div>
+        <div class="field" style="grid-column:1/-1"><label>Regla NOR origen</label>
+          <input type="text" id="ct_${key}_nor_origen" value="${c.nor_nota_origen||''}" style="width:100%"></div>
+        <div class="field" style="grid-column:1/-1"><label>Regla NOR destino</label>
+          <input type="text" id="ct_${key}_nor_destino" value="${c.nor_nota_destino||''}" style="width:100%"></div>
+        <div class="field" style="grid-column:1/-1"><label>Exclusiones laytime</label>
+          <textarea id="ct_${key}_exclusiones" style="width:100%;min-height:60px;background:var(--bg2);color:var(--text);border:1px solid var(--border);border-radius:6px;padding:8px;font-size:12px">${c.exclusiones||''}</textarea></div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function ltGuardarContratos() {
+  const saved = JSON.parse(localStorage.getItem('vms_contratos_lt')||'{}');
+  const cfgAll = ltGetContratos();
+  const customKeys = Object.keys(cfgAll).filter(k => cfgAll[k] && cfgAll[k].custom && CONTRATOS_PRINCIPALES.indexOf(k) === -1);
+  CONTRATOS_PRINCIPALES.concat(customKeys).forEach(key => {
+    const base = LT_CONTRATOS_BASE[key] || cfgAll[key];
+    if (!base) return;
+    const demRate = +document.getElementById('ct_'+key+'_demRate')?.value || base.demRate;
+    const despRateVal = document.getElementById('ct_'+key+'_despRate')?.value;
+    const despRate = despRateVal ? +despRateVal : base.despRate;
+    const det_origen_h = +document.getElementById('ct_'+key+'_det_origen')?.value || 0;
+    const det_destino_h = +document.getElementById('ct_'+key+'_det_destino')?.value || 0;
+    const tasa_carga = +document.getElementById('ct_'+key+'_tasa_carga')?.value || 0;
+    const tasa_desc = +document.getElementById('ct_'+key+'_tasa_desc')?.value || 0;
+    const nor_nota_origen = document.getElementById('ct_'+key+'_nor_origen')?.value || '';
+    const nor_nota_destino = document.getElementById('ct_'+key+'_nor_destino')?.value || '';
+    const exclusiones = document.getElementById('ct_'+key+'_exclusiones')?.value || '';
+    // Update puertos con nuevas tasas
+    const puertos = (base.puertos||[]).map(p => ({
+      ...p,
+      tasa: p.tipo==='carga' ? tasa_carga : tasa_desc
+    }));
+    saved[key] = {...base, demRate, despRate, detention_origen_h: det_origen_h, detention_destino_h: det_destino_h,
+      tasa_carga, tasa_descarga: tasa_desc, nor_nota_origen, nor_nota_destino, exclusiones, puertos};
+  });
+  localStorage.setItem('vms_contratos_lt', JSON.stringify(saved));
+  // Recargar config en memoria
+  Object.assign(LT_CLIENTES_CONFIG, ltGetContratos());
+  if (typeof ltPoblarSelectorContratos === 'function') ltPoblarSelectorContratos();
+  if (typeof ltSyncContratosADB === 'function') ltSyncContratosADB(saved);
+  showAlert && showAlert('✅ Contratos guardados — aplicados a cálculos', 'ok');
+  ltActualizarPuertos();
+}
+
+// ═══ NUEVO CONTRATO (ticket de creación) ═══
+const LT_NOR_REGLAS = {
+  'candelaria_origen':    'SHINC — NOR a cualquier hora · laytime inmediato',
+  'shinc_atdn':           'SHINC ATDN — ventana 09-17/Sáb 09-12 · laytime desde NOR aceptada',
+  'cl17_origen':          'Cláusula 17 origen — ventana 09-17 · laytime NOR+12h',
+  'cl17_destino':         'Cláusula 17 destino — ≤12:00→15:00 / >12:00→06:00 día hábil sgte',
+  'traf_origen':          'Ventana L-V 08-17 + Sáb 09-12 · laytime next working day 08:00',
+  'traf_destino':         'Ventana L-V 08-17 (sin sáb) · laytime next working day 08:00',
+  'traf_8am_calendar':    'SHINC ventana 08-17 · laytime 08:00 día calendario siguiente',
+  'traf_grajales_origen': 'SHINC — laytime NOR+12h o inicio laycan (lo mayor)'
+};
+
+var _ncIdx = 0;
+
+function ltSlug(s) {
+  return (s||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]+/g,'_').replace(/^_+|_+$/g,'').slice(0,50);
+}
+
+function ltNCToggle() {
+  var f = document.getElementById('nc-form');
+  var b = document.getElementById('nc-toggle-btn');
+  if (!f) return;
+  var visible = f.style.display !== 'none';
+  f.style.display = visible ? 'none' : 'block';
+  if (b) b.textContent = visible ? 'Abrir formulario' : 'Cerrar';
+  if (!visible && !document.querySelectorAll('#nc-puertos > div').length) {
+    ltNCAgregarPuerto('carga');
+    ltNCAgregarPuerto('descarga');
+  }
+}
+
+function ltNCAgregarPuerto(tipo) {
+  _ncIdx++;
+  var cont = document.getElementById('nc-puertos');
+  if (!cont) return;
+  var opts = Object.keys(LT_NOR_REGLAS).map(function(k){
+    return '<option value="' + k + '">' + LT_NOR_REGLAS[k] + '</option>';
+  }).join('');
+  var div = document.createElement('div');
+  div.id = 'ncp_' + _ncIdx;
+  div.setAttribute('data-tipo', tipo);
+  div.style.cssText = 'display:grid;grid-template-columns:1.1fr .7fr 1.8fr 1fr auto;gap:8px;align-items:end;margin-bottom:8px;padding:8px;background:var(--bg2);border-radius:8px';
+  div.innerHTML = '<div class="field"><label>' + (tipo === 'carga' ? '🚢 Puerto de carga' : '🏭 Puerto de descarga') + '</label><input type="text" id="ncp_' + _ncIdx + '_nombre" placeholder="Ej: Coquimbo"></div>'
+    + '<div class="field"><label>Tasa T/día (0=CQD)</label><input type="number" id="ncp_' + _ncIdx + '_tasa" value="0" step="500"></div>'
+    + '<div class="field"><label>Regla NOR / inicio laytime</label><select id="ncp_' + _ncIdx + '_regla">' + opts + '</select></div>'
+    + '<div class="field"><label>Régimen</label><select id="ncp_' + _ncIdx + '_regimen"><option value="shinc">SHINC</option><option value="shex">SHEX Sáb 12:00–Lun 06:00</option></select></div>'
+    + '<button class="btn btn-r" onclick="ltNCQuitarPuerto(' + _ncIdx + ')" style="margin-bottom:2px">✕</button>';
+  cont.appendChild(div);
+}
+
+function ltNCQuitarPuerto(i) {
+  var el = document.getElementById('ncp_' + i);
+  if (el) el.remove();
+}
+
+function ltNCLimpiar() {
+  ['nc_label','nc_cliente','nc_producto','nc_condicion','nc_exclusiones'].forEach(function(id){
+    var el = document.getElementById(id);
+    if (el) el.value = '';
+  });
+  var c = document.getElementById('nc-puertos');
+  if (c) c.innerHTML = '';
+  var g = document.getElementById('nc_gira_no_cuenta');
+  if (g) g.checked = false;
+}
+
+function ltNCGuardar() {
+  var label = ((document.getElementById('nc_label')||{}).value||'').trim();
+  if (!label) { alert('Ingresa el nombre del contrato'); return; }
+  var rows = document.querySelectorAll('#nc-puertos > div');
+  if (!rows.length) { alert('Agrega al menos un puerto'); return; }
+  var puertos = [];
+  var usados = {};
+  var faltaNombre = false;
+  rows.forEach(function(row){
+    var i = row.id.replace('ncp_','');
+    var tipo = row.getAttribute('data-tipo') || 'carga';
+    var nombre = ((document.getElementById('ncp_' + i + '_nombre')||{}).value||'').trim();
+    if (!nombre) { faltaNombre = true; return; }
+    var tasa = +((document.getElementById('ncp_' + i + '_tasa')||{}).value||0) || 0;
+    var regla = ((document.getElementById('ncp_' + i + '_regla')||{}).value||'candelaria_origen');
+    var regimen = ((document.getElementById('ncp_' + i + '_regimen')||{}).value||'shinc');
+    var pid = ltSlug(nombre) || ('puerto_' + i);
+    if (usados[pid]) pid = pid + '_' + i;
+    usados[pid] = true;
+    var nota = (regimen === 'shinc' ? 'SHINC' : 'SHEX Sáb12–Lun06') + ' · ' + (tasa ? tasa.toLocaleString('es-CL') + ' T/día' : 'CQD');
+    var p = { id: pid, nombre: nombre, tipo: tipo, tasa: tasa, shinc: regimen === 'shinc', nor_regla: regla, nota: nota };
+    if (regimen === 'shex') p.shex = { satnoon: true, monMorn: '06:00' };
+    puertos.push(p);
+  });
+  if (faltaNombre) { alert('Hay puertos sin nombre'); return; }
+  if (!puertos.length) { alert('Agrega al menos un puerto válido'); return; }
+  var key = ltSlug(label) || ('contrato_' + Date.now().toString(36));
+  var cfgAll = ltGetContratos();
+  if (cfgAll[key]) key = key + '_' + Date.now().toString(36).slice(-4);
+  var pCarga = null, pDesc = null;
+  puertos.forEach(function(p){
+    if (p.tipo === 'carga' && !pCarga) pCarga = p;
+    if (p.tipo === 'descarga' && !pDesc) pDesc = p;
+  });
+  var despVal = ((document.getElementById('nc_despRate')||{}).value||'');
+  var contrato = {
+    label: label,
+    cliente: ((document.getElementById('nc_cliente')||{}).value||'').trim(),
+    producto: ((document.getElementById('nc_producto')||{}).value||'').trim(),
+    condicion: ((document.getElementById('nc_condicion')||{}).value||'').trim(),
+    demRate: +((document.getElementById('nc_demRate')||{}).value||0) || 18000,
+    despRate: despVal ? +despVal : null,
+    detention_origen_h: +((document.getElementById('nc_det_origen')||{}).value||0) || 0,
+    detention_destino_h: +((document.getElementById('nc_det_destino')||{}).value||0) || 0,
+    pct_huelga: +((document.getElementById('nc_pct_huelga')||{}).value||0) || 0,
+    pct_clima: +((document.getElementById('nc_pct_clima')||{}).value||0) || 0,
+    nor_regla_origen: pCarga ? pCarga.nor_regla : 'shinc_atdn',
+    nor_regla_destino: pDesc ? pDesc.nor_regla : 'shinc_atdn',
+    nor_nota_origen: pCarga ? (LT_NOR_REGLAS[pCarga.nor_regla]||'') : '',
+    nor_nota_destino: pDesc ? (LT_NOR_REGLAS[pDesc.nor_regla]||'') : '',
+    exclusiones: ((document.getElementById('nc_exclusiones')||{}).value||'').trim(),
+    gira_cuenta: !((document.getElementById('nc_gira_no_cuenta')||{}).checked),
+    custom: true,
+    puertos: puertos
+  };
+  var saved = JSON.parse(localStorage.getItem('vms_contratos_lt')||'{}');
+  saved[key] = contrato;
+  localStorage.setItem('vms_contratos_lt', JSON.stringify(saved));
+  Object.assign(LT_CLIENTES_CONFIG, ltGetContratos());
+  if (typeof ltPoblarSelectorContratos === 'function') ltPoblarSelectorContratos();
+  if (typeof ltSyncContratoADB === 'function') ltSyncContratoADB(key, contrato);
+  if (typeof renderClientesGrid === 'function') renderClientesGrid();
+  renderContratosEditor();
+  ltNCLimpiar();
+  showAlert && showAlert('✅ Contrato "' + label + '" creado — ya disponible en los cálculos', 'ok');
+}
+
+function ltEliminarContrato(key) {
+  var cfg = ltGetContratos();
+  var c = cfg[key];
+  if (!c || !c.custom) { alert('Solo se pueden eliminar contratos creados manualmente'); return; }
+  if (!confirm('¿Eliminar el contrato "' + (c.label||key) + '"? Se quitará de todos los cálculos.')) return;
+  var saved = JSON.parse(localStorage.getItem('vms_contratos_lt')||'{}');
+  delete saved[key];
+  localStorage.setItem('vms_contratos_lt', JSON.stringify(saved));
+  delete LT_CLIENTES_CONFIG[key];
+  if (typeof ltPoblarSelectorContratos === 'function') ltPoblarSelectorContratos();
+  if (typeof ltBorrarContratoDB === 'function') ltBorrarContratoDB(key);
+  if (typeof renderClientesGrid === 'function') renderClientesGrid();
+  renderContratosEditor();
+  showAlert && showAlert('🗑 Contrato eliminado', 'ok');
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  inicializarClientesDefault();
+  renderClientesGrid();
+  cargarNaves();
+  renderHistorial();
+  actualizarCondiciones();
+  ltPoblarSelectorContratos();
+  ltActualizarPuertos();
+  ltSyncContratosDesdeDB();
+});
+
+// ═══════════════════════════════════════════════
+// TABS
+// ═══════════════════════════════════════════════
+function setTab(tab) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  event.target.classList.add('active');
+  document.getElementById('panel-' + tab).classList.add('active');
+  if (tab === 'historial') renderHistorial();
+  if (tab === 'clientes') renderClientesGrid();
+  if (tab === 'contratos') renderContratosEditor();
+  if (tab === 'detention') {
+    renderDetentionForm();
+    // Auto-poblar desde escala seleccionada
+    const _escId = document.getElementById('selEscala')?.value || '';
+    const _vjs2 = JSON.parse(localStorage.getItem('vms_viajes')||'[]');
+    let _esc = null, _vj = null;
+    if (_escId) {
+      _vjs2.forEach(v => { const e=(v.escalas||[]).find(e=>e.id===_escId); if(e){_esc=e;_vj=v;} });
+    }
+    // Si no hay escala seleccionada, buscar la más reciente con ATA
+    if (!_esc) {
+      let _bestDate = null;
+      _vjs2.forEach(v => (v.escalas||[]).forEach(e => {
+        if(e.ata && (!_bestDate || new Date(e.ata) > _bestDate)){
+          _bestDate = new Date(e.ata); _esc = e; _vj = v;
+        }
+      }));
+    }
+    if (_escId || _esc) {
+      if (!_vj) _vjs2.forEach(v => { const e=(v.escalas||[]).find(e=>e.id===(_esc?.id||'')); if(e){_vj=v;} });
+      if (_esc) {
+        // Nave
+        const naves = JSON.parse(localStorage.getItem('vms_naves')||'[]');
+        const nave = naves.find(n=>n.id===(_vj?.nave_id||'')||n.nombre===(_vj?.nave||''));
+        if(nave) { const el=document.getElementById('detNave'); if(el) el.value=nave.nombre||''; }
+        // Viaje
+        const vjaEl=document.getElementById('detViaje');
+        if(vjaEl&&_vj) vjaEl.value=_vj.voyage||_vj.numero||'';
+        // Puerto
+        const ptoEl=document.getElementById('detPuerto');
+        if(ptoEl&&_esc.puerto) ptoEl.value=_esc.puerto;
+        // Cliente
+        const cliEl=document.getElementById('detCliente');
+        if(cliEl&&_esc.cliente){
+          const cm={'bhp_angamos':'BHP','bhp_concentrado':'BHP','codelco_angamos':'Codelco',
+            'codelco_catodos':'Codelco','codelco_concentrado':'Codelco','candelaria_coquimbo':'Candelaria',
+            'kmp_harina':'KMP','trafigura_zinc':'Trafigura','trafigura_concentrado_cobre':'Trafigura'};
+          const mapped=cm[_esc.cliente]||_esc.cliente;
+          if(mapped) cliEl.value=mapped;
+        }
+        // ATA → arribo
+        if(_esc.ata){ const el=document.getElementById('detArribo'); if(el) el.value=_esc.ata.substring(0,16); }
+        // ATB → All Fast
+        if(_esc.atb){ const el=document.getElementById('detAllFast'); if(el) el.value=_esc.atb.substring(0,16); }
+        // Tonelaje desde turnos
+        const _ts=JSON.parse(localStorage.getItem('vms_turnos')||'[]').filter(t=>t.escala_id===_escId);
+        const _ton=_ts.reduce((s,t)=>s+(t.kpi?.totalTon||0),0);
+        if(_ton>0){
+          const el1=document.getElementById('detTonCliente'); if(el1) el1.value=Math.round(_ton);
+          const el2=document.getElementById('detTonTotal'); if(el2) el2.value=Math.round(_ton);
+        }
+        renderDetentionForm();
+        setTimeout(calcularDetention, 200);
+      }
+    }
+  }
+  if (tab === 'laytime') {
+    ltCargarEscalas(); // Poblar selector de naves
+    // Sincronizar cliente desde escala seleccionada
+    const _eid = document.getElementById('selEscala')?.value;
+    if (_eid) {
+      const _vj = JSON.parse(localStorage.getItem('vms_viajes')||'[]');
+      let _esc = null;
+      _vj.forEach(v=>{const e=(v.escalas||[]).find(e=>e.id===_eid);if(e)_esc=e;});
+      if (_esc?.cliente) {
+        const _sel = document.getElementById('ltCargaTipo');
+        if (_sel) _sel.value = _esc.cliente;
+      }
+    }
+    ltActualizarPuertos();
+  }
+}
+
+// ═══════════════════════════════════════════════
+// CLIENTES DEFAULT
+// ═══════════════════════════════════════════════
+function inicializarClientesDefault() {
+  const existing = getClientes();
+  // Siempre verificar que todos los clientes base existan
+  const clientesBase = [
+    { nombre: 'Codelco',    horasOrigen: 24, horasDestino: 24, demOrigen: 25000,  demDestino: 25000,  notas: 'SHINC origen y destino. NOR cuenta a cualquier hora.' },
+    { nombre: 'BHP',        horasOrigen: 48, horasDestino: 24, demOrigen: 25000,  demDestino: 25000,  notas: 'SHINC origen y destino. NOR cuenta a cualquier hora.' },
+    { nombre: 'KMP',        horasOrigen: 12, horasDestino: 12, demOrigen: 18000,  demDestino: 18000,  notas: 'KMP Fish Meal. 12h detención origen y destino.' },
+    { nombre: 'Trafigura',  horasOrigen: 0,  horasDestino: 0,  demOrigen: 19000,  demDestino: 19000,  notas: 'NOR siguiente día hábil 08:00. Demurrage USD 19,000/día.' },
+    { nombre: 'Candelaria', horasOrigen: 24, horasDestino: 24, demOrigen: 18000,  demDestino: 18000,  notas: 'Coquimbo → Bremen/Brunsbuttel/Antwerp. SHINC origen y destino.' },
+  ];
+  const nombresExist = existing.map(c => c.nombre);
+  let changed = false;
+  clientesBase.forEach(base => {
+    if (!nombresExist.includes(base.nombre)) {
+      existing.push({ id: genId(), ...base });
+      changed = true;
+    }
+  });
+  if (changed || existing.length === 0) {
+    localStorage.setItem(LS_CLIENTES, JSON.stringify(existing));
+  }
+}
+
+function getClientes() {
+  return JSON.parse(localStorage.getItem(LS_CLIENTES) || '[]');
+}
+
+function renderClientesGrid() {
+  const grid = document.getElementById('clientesGrid');
+  const clientes = getClientes();
+  let html = '';
+  clientes.forEach(c => {
+    html += `
+      <div class="cliente-card">
+        <button class="btn-edit-cliente" onclick="editarCliente('${c.id}')">✏️ Editar</button>
+        <div class="cliente-nombre">${c.nombre}</div>
+        <div class="cliente-row"><span>Horas libres origen</span><span>${c.horasOrigen}h (FIOST)</span></div>
+        <div class="cliente-row"><span>Horas libres destino</span><span>${c.horasDestino}h (SHINC)</span></div>
+        <div class="cliente-row"><span>Demurrage origen</span><span>USD ${c.demOrigen.toLocaleString()}/día</span></div>
+        <div class="cliente-row"><span>Demurrage destino</span><span>USD ${c.demDestino.toLocaleString()}/día</span></div>
+        ${c.notas ? `<div style="margin-top:8px; font-size:11px; color:var(--text2)">${c.notas}</div>` : ''}
+        <div style="margin-top:10px; text-align:right">
+          <button class="btn-danger" onclick="eliminarCliente('${c.id}')">🗑 Eliminar</button>
+        </div>
+      </div>`;
+  });
+  html += `<button class="btn-add-cliente" onclick="abrirModalCliente()">＋ Agregar Cliente</button>`;
+  grid.innerHTML = html;
+
+  // actualizar select en calcular
+  const sel = document.getElementById('selCliente');
+  const prev = sel.value;
+  sel.innerHTML = '<option value="manual">Manual</option>';
+  clientes.forEach(c => {
+    sel.innerHTML += `<option value="${c.id}">${c.nombre}</option>`;
+  });
+  // Contratos de chartering también seleccionables (cargan todas sus condiciones)
+  try {
+    var cfgCt = ltGetContratos();
+    var ctKeys = Object.keys(cfgCt).filter(function(k){
+      return cfgCt[k] && Array.isArray(cfgCt[k].puertos) && cfgCt[k].puertos.length && cfgCt[k].label;
+    });
+    if (ctKeys.length) {
+      sel.innerHTML += '<optgroup label="— Contratos —">' + ctKeys.map(function(k){
+        return '<option value="ct:' + k + '">' + cfgCt[k].label + (cfgCt[k].custom ? ' ★' : '') + '</option>';
+      }).join('') + '</optgroup>';
+    }
+  } catch(e) { console.warn('selCliente contratos', e); }
+  if (prev) sel.value = prev;
+}
+
+function abrirModalCliente() {
+  editingClienteId = null;
+  document.getElementById('modalClienteTitulo').textContent = '➕ Nuevo Cliente';
+  document.getElementById('mcNombre').value = '';
+  document.getElementById('mcHorasOrigen').value = 24;
+  document.getElementById('mcHorasDestino').value = 12;
+  document.getElementById('mcDemOrigen').value = 25000;
+  document.getElementById('mcDemDestino').value = 25000;
+  document.getElementById('mcNotas').value = '';
+  document.getElementById('modalCliente').classList.add('open');
+}
+
+function editarCliente(id) {
+  const c = getClientes().find(x => x.id === id);
+  if (!c) return;
+  editingClienteId = id;
+  document.getElementById('modalClienteTitulo').textContent = '✏️ Editar Cliente';
+  document.getElementById('mcNombre').value = c.nombre;
+  document.getElementById('mcHorasOrigen').value = c.horasOrigen;
+  document.getElementById('mcHorasDestino').value = c.horasDestino;
+  document.getElementById('mcDemOrigen').value = c.demOrigen;
+  document.getElementById('mcDemDestino').value = c.demDestino;
+  document.getElementById('mcNotas').value = c.notas || '';
+  document.getElementById('modalCliente').classList.add('open');
+}
+
+function cerrarModalCliente() {
+  document.getElementById('modalCliente').classList.remove('open');
+}
+
+function mostrarToast(msg) {
+  msg = msg || 'GUARDADO';
+  const t = document.getElementById('saveToast');
+  const m = document.getElementById('saveToastMsg');
+  if (!t) return;
+  if (m) m.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 1200);
+}
+
+function guardarCliente() {
+  const nombre = document.getElementById('mcNombre').value.trim();
+  if (!nombre) return alert('Ingrese el nombre del cliente');
+  const clientes = getClientes();
+  const nuevo = {
+    id: editingClienteId || genId(),
+    nombre,
+    horasOrigen: parseFloat(document.getElementById('mcHorasOrigen').value) || 24,
+    horasDestino: parseFloat(document.getElementById('mcHorasDestino').value) || 12,
+    demOrigen: parseFloat(document.getElementById('mcDemOrigen').value) || 25000,
+    demDestino: parseFloat(document.getElementById('mcDemDestino').value) || 25000,
+    notas: document.getElementById('mcNotas').value.trim(),
+  };
+  if (editingClienteId) {
+    const idx = clientes.findIndex(x => x.id === editingClienteId);
+    if (idx >= 0) clientes[idx] = nuevo;
+  } else {
+    clientes.push(nuevo);
+  }
+  localStorage.setItem(LS_CLIENTES, JSON.stringify(clientes));
+  cerrarModalCliente();
+  renderClientesGrid();
+  mostrarToast('CLIENTE GUARDADO');
+}
+
+function eliminarCliente(id) {
+  if (!confirm('¿Eliminar este cliente?')) return;
+  const clientes = getClientes().filter(x => x.id !== id);
+  localStorage.setItem(LS_CLIENTES, JSON.stringify(clientes));
+  renderClientesGrid();
+}
+
+// ═══════════════════════════════════════════════
+// NAVES / ESCALAS
+// ═══════════════════════════════════════════════
+function cargarNaves() {
+  var nv = JSON.parse(localStorage.getItem(LS_NAVES)||'[]');
+  var nm = nv.map(function(n){return n.nombre||n.nave||n;}).filter(Boolean);
+  var sel = document.getElementById('selNave');
+  sel.innerHTML = '<option value="">— Seleccionar nave —</option>';
+  nm.forEach(function(n){sel.innerHTML += '<option value="'+n+'">' + n + '</option>';});
+  var lt = document.getElementById('ltNave');
+  if(lt){lt.innerHTML=sel.innerHTML;}
+}
+
+function cargarEscalas() {
+  const naveNombre = document.getElementById('selNave').value;
+  const sel = document.getElementById('selEscala');
+  sel.innerHTML = '<option value="">— Seleccionar escala —</option>';
+  if (!naveNombre) return;
+  const viajes = JSON.parse(localStorage.getItem(LS_VIAJES) || '[]');
+  viajes.filter(v => v.nave_id === (JSON.parse(localStorage.getItem('vms_naves')||'[]').find(n=>n.nombre===naveNombre)||{}).id).forEach(v => {
+    const escalas = v.escalas || [];
+    escalas.forEach(e => {
+      const label = `${e.puerto || '?'} — ${e.eta ? e.eta.split('T')[0] : 'sin fecha'}`;
+      sel.innerHTML += `<option value="${e.id}" data-viaje="${v.id}">${label}</option>`;
+    });
+  });
+}
+
+function cargarDatosEscala() {
+  const escalaId = document.getElementById('selEscala').value;
+  if (!escalaId) return;
+
+  // ── Recuperar cálculo previo de esta escala si existe ──
+  const _vjs_prev = JSON.parse(localStorage.getItem('vms_viajes') || '[]');
+  let _calc_prev_carga = null, _calc_prev_descarga = null;
+  _vjs_prev.forEach(v => {
+    const e = (v.escalas||[]).find(e => e.id === escalaId);
+    if (e && e.calculos_chartering) {
+      _calc_prev_carga = e.calculos_chartering['carga'] || null;
+      _calc_prev_descarga = e.calculos_chartering['descarga'] || null;
+    }
+  });
+  // Mostrar banner si hay cálculos previos
+  let _prevBanner = document.getElementById('prev-calc-banner');
+  if (_calc_prev_carga || _calc_prev_descarga) {
+    if (!_prevBanner) {
+      _prevBanner = document.createElement('div');
+      _prevBanner.id = 'prev-calc-banner';
+      _prevBanner.style.cssText = 'background:var(--bg3);border:1px solid var(--accent);border-radius:8px;padding:12px 16px;margin-bottom:16px;font-size:12px';
+      document.querySelector('#panel-demurrage .card')?.prepend(_prevBanner);
+    }
+    let _bannerHTML = '<div style="font-weight:700;color:var(--accent);margin-bottom:8px">📋 Cálculos previos para esta escala</div>';
+    if (_calc_prev_carga) {
+      const _mc = _calc_prev_carga;
+      const _color = _mc.tipo_resultado==='demurrage'?'var(--red)':_mc.tipo_resultado==='despatch'?'var(--green)':'var(--text)';
+      _bannerHTML += `<div style="margin-bottom:6px">⚓ <strong>Origen (${_mc.cliente||'—'})</strong>: <span style="color:${_color}">${_mc.tipo_resultado?.toUpperCase()} USD ${Math.round(_mc.monto||0).toLocaleString('es-CL')}</span> <span style="color:var(--text3);font-size:11px">· ${new Date(_mc.fecha).toLocaleDateString('es-CL')}</span> <button onclick="cargarCalcPrevio('carga')" style="background:var(--accent);color:#000;border:none;border-radius:4px;padding:2px 8px;cursor:pointer;font-size:11px;margin-left:8px">Cargar</button></div>`;
+    }
+    if (_calc_prev_descarga) {
+      const _md = _calc_prev_descarga;
+      const _color = _md.tipo_resultado==='demurrage'?'var(--red)':_md.tipo_resultado==='despatch'?'var(--green)':'var(--text)';
+      _bannerHTML += `<div>🏁 <strong>Destino (${_md.cliente||'—'})</strong>: <span style="color:${_color}">${_md.tipo_resultado?.toUpperCase()} USD ${Math.round(_md.monto||0).toLocaleString('es-CL')}</span> <span style="color:var(--text3);font-size:11px">· ${new Date(_md.fecha).toLocaleDateString('es-CL')}</span> <button onclick="cargarCalcPrevio('descarga')" style="background:var(--accent);color:#000;border:none;border-radius:4px;padding:2px 8px;cursor:pointer;font-size:11px;margin-left:8px">Cargar</button></div>`;
+    }
+    _prevBanner.innerHTML = _bannerHTML;
+    _prevBanner.style.display = 'block';
+
+    // Guardar en window para cargarCalcPrevio
+    window._calcsPrevios = { carga: _calc_prev_carga, descarga: _calc_prev_descarga };
+  } else if (_prevBanner) {
+    _prevBanner.style.display = 'none';
+  }
+
+  // Leer escala desde vms_viajes para obtener ATA
+  const _viajes = JSON.parse(localStorage.getItem('vms_viajes') || '[]');
+  let _escala = null;
+  _viajes.forEach(v => { const e = (v.escalas||[]).find(e=>e.id===escalaId); if(e) _escala=e; });
+  if (_escala) {
+    // Autoseleccionar cliente/contrato
+    if (_escala.cliente) {
+      const sel = document.getElementById('ltCargaTipo');
+      if (sel) { sel.value = _escala.cliente; ltActualizarPuertos(); }
+    }
+    // Poblar NOR desde ATA
+    if (_escala.ata) {
+      document.getElementById('norTendered').value = _escala.ata.substring(0,16);
+      calcularNorAceptada();
+    }
+  }
+
+  const turnos = JSON.parse(localStorage.getItem(LS_TURNOS) || '[]');
+  const escTurnos = turnos.filter(t => t.escala_id === escalaId);
+
+  if (escTurnos.length > 0) {
+    // First Hook: usar first_hook del turno si existe, sino fecha+hi del primer turno
+    const sorted = [...escTurnos].sort((a,b) => {
+      const ka = (a.fecha||'') + 'T' + (a.hi||'');
+      const kb = (b.fecha||'') + 'T' + (b.hi||'');
+      return ka.localeCompare(kb);
+    });
+    // Preferir first_hook guardado en el turno (hora real de primer gancho)
+    const primerTurno = sorted[0];
+    let firstHookDt = '';
+    if (primerTurno.first_hook && primerTurno.fecha) {
+      firstHookDt = primerTurno.fecha + 'T' + primerTurno.first_hook;
+    } else {
+      firstHookDt = primerTurno.fecha ? primerTurno.fecha + 'T' + (primerTurno.hi||'') : (primerTurno.hi||'');
+    }
+
+    // Last Hook: usar last_hook del turno si existe, sino fecha+hf del último turno
+    const sortedByEnd = [...escTurnos].sort((a,b) => {
+      const fa = a.fecha||''; const fb = b.fecha||'';
+      const ha = a.hf||''; const hb = b.hf||'';
+      const da = ha <= '09:00' ? new Date(fa+'T'+ha).getTime() + 86400000 : new Date(fa+'T'+ha).getTime();
+      const db = hb <= '09:00' ? new Date(fb+'T'+hb).getTime() + 86400000 : new Date(fb+'T'+hb).getTime();
+      return da - db;
+    });
+    const lastT = sortedByEnd[sortedByEnd.length-1];
+    let lastHookDt = '';
+    if (lastT && lastT.last_hook && lastT.fecha) {
+      // El turno cruza medianoche si hi > hf (ej: 23:00 → 08:00)
+      // En ese caso, last_hook temprano (<=09:00) pertenece al día siguiente
+      // PERO solo si el turno empezó en el día anterior (hi > last_hook)
+      var _lhCruce = lastT.hi && lastT.hf && lastT.hi > lastT.hf && lastT.last_hook <= lastT.hf;
+      if (_lhCruce) {
+        const d = new Date(lastT.fecha + 'T' + lastT.last_hook);
+        d.setDate(d.getDate() + 1);
+        lastHookDt = d.toISOString().slice(0,16);
+      } else {
+        lastHookDt = lastT.fecha + 'T' + lastT.last_hook;
+      }
+    } else if (lastT && lastT.fecha) {
+      // Fallback: usar hora_fin de la última cuadrilla del turno
+      const cuads = (lastT.cuadrillas || []).filter(c => c.hora_fin);
+      const lastHf = cuads.length ? cuads.map(c => c.hora_fin).sort().pop() : lastT.hf;
+      if (lastHf) {
+        // Cruce de medianoche: solo si hi > hf y hora_fin <= hf
+        var _hfCruce = lastT.hi && lastT.hf && lastT.hi > lastT.hf && lastHf <= lastT.hf;
+        if (_hfCruce) {
+          const d = new Date(lastT.fecha + 'T' + lastHf);
+          d.setDate(d.getDate() + 1);
+          lastHookDt = d.toISOString().slice(0,16);
+        } else {
+          lastHookDt = lastT.fecha + 'T' + lastHf;
+        }
+      }
+    }
+
+    if (firstHookDt) document.getElementById('firstHook').value = formatDtLocal(firstHookDt);
+    if (lastHookDt) document.getElementById('lastHook').value = formatDtLocal(lastHookDt);
+
+    // Calcular tasa operacional real desde días en puerto y tonelaje
+    const _totalTonEsc = escTurnos.reduce(function(s,t){return s+(t.kpi&&t.kpi.totalTon?t.kpi.totalTon:0);},0);
+    window._ltTonTotal = _totalTonEsc;
+    if (_totalTonEsc > 0) {
+      // Días: desde primer turno (hi) hasta último (hf)
+      const _t0esc = sortedByEnd[0];
+      const _tLesc = sortedByEnd[sortedByEnd.length-1];
+      if (_t0esc && _tLesc) {
+        const _dIni = new Date(_t0esc.fecha+'T'+(_t0esc.hi||'08:00'));
+        let _dFin = new Date(_tLesc.fecha+'T'+(_tLesc.hf||'08:00'));
+        if (_tLesc.hf && _tLesc.hf <= '09:00') _dFin = new Date(_dFin.getTime()+86400000);
+        const _diasOp = (_dFin - _dIni) / 86400000;
+        const _tasaOp = _diasOp > 0 ? Math.round(_totalTonEsc / _diasOp) : 0;
+        const _elTasaOp = document.getElementById('tasaOperacional');
+        if (_elTasaOp && _tasaOp > 0) {
+          _elTasaOp.value = _tasaOp;
+          const _hint = document.getElementById('hintTasaOp');
+          if (_hint) _hint.textContent = _totalTonEsc.toLocaleString('es-CL') + ' t ÷ ' + _diasOp.toFixed(1) + ' días = ' + _tasaOp.toLocaleString('es-CL') + ' t/día';
+        }
+      }
+    }
+    calcRendimientoVsContrato();
+
+    // Calcular First/Last Hook por cliente BHP/Codelco
+    calcHooksPorCliente(escTurnos);
+
+    // Total ton
+    const totalTon = escTurnos.reduce((s,t) => s + (t.kpi?.totalTon || 0), 0);
+    document.getElementById('totalTon').value = Math.round(totalTon);
+
+    // Detenciones
+    let totalDetMin = 0;
+    let detListHtml = '';
+    escTurnos.forEach(t => {
+      (t.detenciones||[]).forEach(d => {
+        totalDetMin += d.min || 0;
+        detListHtml += `<div style="display:flex;justify-content:space-between;font-size:12px;padding:5px 0;border-bottom:1px solid var(--border)">
+          <span style="color:var(--text2)">${d.tipo||'—'} <span style="font-size:10px">(${d.resp})</span></span>
+          <span class="mono">${d.min} min</span>
+        </div>`;
+      });
+    });
+
+    document.getElementById('turnosAutoInfo').style.display = 'flex';
+    document.getElementById('turnosDetalle').style.display = 'block';
+    document.getElementById('turnosDetencionesLista').innerHTML = detListHtml || '<div style="color:var(--text2);font-size:12px;padding:8px 0">Sin detenciones registradas</div>';
+    document.getElementById('turnosSubtitle').textContent = `${escTurnos.length} turno(s) encontrados`;
+
+    // Para FIOST: detenciones estibadores
+    const detEstib = escTurnos.reduce((s,t) => {
+      return s + (t.detenciones||[]).filter(d => d.resp==='Estibadores').reduce((ss,d) => ss+(d.min||0), 0);
+    }, 0);
+    document.getElementById('detExcluidas').value = detEstib;
+
+    actualizarTimeline();
+  } else {
+    document.getElementById('turnosAutoInfo').style.display = 'none';
+    document.getElementById('turnosDetalle').style.display = 'none';
+    document.getElementById('turnosSubtitle').textContent = 'ingresar manualmente';
+  }
+}
+
+// ═══════════════════════════════════════════════
+// CONDICIONES
+// ═══════════════════════════════════════════════
+function actualizarCondiciones() {
+  const tipo = document.getElementById('selTipoOp').value;
+  const label = document.getElementById('condTipoLabel');
+  const detHint = document.getElementById('detHint');
+  const norHint = document.getElementById('norHint');
+
+  if (tipo === 'descarga') {
+    label.textContent = 'SHINC · 24h libres · NOR a cualquier hora';
+    document.getElementById('horasLibres').value = 24;
+  } else {
+    label.textContent = 'SHINC · 24h libres · NOR a cualquier hora';
+    document.getElementById('horasLibres').value = 24;
+  }
+  // Ambos tramos SHINC: no se excluyen detenciones, NOR cuenta siempre
+  detHint.textContent = 'SHINC: no se excluyen detenciones del tiempo operado.';
+  norHint.textContent = 'NOR cuenta a cualquier hora (sin restricción de horario de oficina).';
+  document.getElementById('detExcluidas').value = 0;
+  document.getElementById('detExcluidas').disabled = true;
+  calcularNorAceptada();
+}
+
+function cargarCondCliente() {
+  const clienteId = document.getElementById('selCliente').value;
+  const label = document.getElementById('condTipoLabel');
+  const detHint = document.getElementById('detHint');
+  const fcm = document.getElementById('fieldTasaCargaManual');
+  const fdm = document.getElementById('fieldTasaDescargaManual');
+  if (clienteId === 'manual') {
+    if(label) label.textContent = 'Configure manualmente las condiciones';
+    if(fcm) fcm.style.display = '';
+    if(fdm) fdm.style.display = '';
+    return;
+  }
+  if (clienteId.indexOf('ct:') === 0) {
+    var cfgC = ltGetContratos()[clienteId.slice(3)];
+    if (!cfgC) return;
+    var tipoOpC = ((document.getElementById('selTipoOp')||{}).value||'descarga');
+    var esDescC = tipoOpC === 'descarga';
+    var horasC = esDescC ? (cfgC.detention_destino_h||0) : (cfgC.detention_origen_h||0);
+    document.getElementById('horasLibres').value = horasC;
+    document.getElementById('demurrageRate').value = cfgC.demRate || 0;
+    document.getElementById('despatchRate').value = (cfgC.despRate != null && cfgC.despRate !== '') ? cfgC.despRate : (cfgC.demRate||0)/2;
+    var pC = (cfgC.puertos||[]).filter(function(p){ return p.tipo === 'carga'; })[0];
+    var pD = (cfgC.puertos||[]).filter(function(p){ return p.tipo === 'descarga'; })[0];
+    var tcEl = document.getElementById('tasaCargaManual');
+    var tdEl = document.getElementById('tasaDescargaManual');
+    if (tcEl && pC) tcEl.value = pC.tasa || 0;
+    if (tdEl && pD) tdEl.value = pD.tasa || 0;
+    if (fcm) fcm.style.display = '';
+    if (fdm) fdm.style.display = '';
+    var notaNorC = esDescC ? (cfgC.nor_nota_destino||'') : (cfgC.nor_nota_origen||'');
+    if (label) label.textContent = (cfgC.condicion ? cfgC.condicion + ' · ' : '') + horasC + 'h libres' + (notaNorC ? ' · ' + notaNorC : '');
+    if (detHint) detHint.textContent = cfgC.exclusiones || 'Según contrato';
+    var norValC = document.getElementById('norTendered').value;
+    if (norValC) calcularNorAceptada();
+    // Cargar tasa contractual según puerto seleccionado
+    var _puertoActual = (document.getElementById('selPuertoOrigen')||document.getElementById('selPuerto')||{}).value||'';
+    var _puertos = cfgC.puertos||[];
+    var _pMatch = _puertos.find(function(p){return (_puertoActual&&(p.id===_puertoActual||p.nombre===_puertoActual))||(!_puertoActual&&p.tipo===(esDescC?'descarga':'carga'));});
+    if(_pMatch&&_pMatch.tasa>0){var _tcEl=document.getElementById('tasaContratada');if(_tcEl)_tcEl.value=_pMatch.tasa;}
+    calcRendimientoVsContrato();
+    return;
+  }
+  if(fcm) fcm.style.display = 'none';
+  if(fdm) fdm.style.display = 'none';
+  const c = getClientes().find(x => x.id === clienteId);
+  if (!c) return;
+  const tipo = document.getElementById('selTipoOp').value;
+  if (tipo === 'descarga') {
+    document.getElementById('horasLibres').value = c.horasDestino;
+    document.getElementById('demurrageRate').value = c.demDestino;
+    if(label) label.textContent = `SHINC · ${c.horasDestino}h libres · NOR a cualquier hora`;
+  } else {
+    document.getElementById('horasLibres').value = c.horasOrigen;
+    document.getElementById('demurrageRate').value = c.demOrigen;
+    if(label) label.textContent = `SHINC · ${c.horasOrigen}h libres · NOR a cualquier hora`;
+  }
+  if(detHint) detHint.textContent = 'SHINC: no se excluyen detenciones del tiempo operado.';
+  sincDespatch();
+  // Recalcular NOR si ya hay fecha ingresada
+  const norVal = document.getElementById('norTendered').value;
+  if(norVal) calcularNorAceptada();
+}
+
+function sincDespatch() {
+  const dem = parseFloat(document.getElementById('demurrageRate').value) || 0;
+  document.getElementById('despatchRate').value = dem / 2;
+}
+
+function calcRendimientoVsContrato() {
+  const panel = document.getElementById('panelRendVsContrato');
+  const html = document.getElementById('rendVsContratoHtml');
+  if (!panel || !html) return;
+  const tasaC = parseFloat(document.getElementById('tasaContratada').value) || 0;
+  const tasaO = parseFloat(document.getElementById('tasaOperacional').value) || 0;
+  const dem = parseFloat(document.getElementById('demurrageRate').value) || 0;
+  const desp = parseFloat(document.getElementById('despatchRate').value) || 0;
+  if (!tasaC || !tasaO) { panel.style.display = 'none'; return; }
+  panel.style.display = '';
+  // Calcular tonelaje total desde los turnos cargados
+  const ton = window._ltTonTotal || 0;
+  // Días permitidos = ton / tasa contractual
+  const diasPermitidos = tasaC > 0 ? ton / tasaC : 0;
+  // Días reales = ton / tasa operacional
+  const diasReales = tasaO > 0 ? ton / tasaO : 0;
+  const difDias = diasPermitidos - diasReales; // positivo = despatch, negativo = demurrage
+  const esDespatch = difDias > 0;
+  const usd = Math.abs(difDias) * (esDespatch ? desp : dem);
+  const color = esDespatch ? '#22c55e' : '#ef4444';
+  const label = esDespatch ? '✅ DESPATCH' : '⚠️ DEMURRAGE';
+  const fN = n => n.toLocaleString('es-CL', {maximumFractionDigits:2});
+  var _tonLbl=ton>0?ton.toLocaleString('es-CL')+' t':'— (sin turnos)';
+  var _fmla='Formula: dias permitidos = '+(ton>0?ton.toLocaleString('es-CL'):'ton')+' / '+tasaC.toLocaleString('es-CL')+' t/dia | dias reales = '+(ton>0?ton.toLocaleString('es-CL'):'ton')+' / '+tasaO.toLocaleString('es-CL')+' t/dia';
+  html.innerHTML=
+    '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px">'
+    +'<div><div style="font-size:10px;color:var(--text3)">Ton. totales</div><div style="font-weight:700">'+_tonLbl+'</div></div>'
+    +'<div><div style="font-size:10px;color:var(--text3)">Dias permitidos</div><div style="font-weight:700">'+fN(diasPermitidos)+' dias</div></div>'
+    +'<div><div style="font-size:10px;color:var(--text3)">Dias reales</div><div style="font-weight:700">'+fN(diasReales)+' dias</div></div>'
+    +'<div><div style="font-size:10px;color:var(--text3)">Diferencia</div><div style="font-weight:700;color:'+color+'">'+(esDespatch?'+':'')+fN(difDias)+' dias</div></div>'
+    +'<div><div style="font-size:10px;color:var(--text3)">Resultado</div><div style="font-weight:800;font-size:15px;color:'+color+'">'+label+'</div></div>'
+    +'<div><div style="font-size:10px;color:var(--text3)">USD estimado</div><div style="font-weight:800;font-size:15px;color:'+color+'">USD '+Math.round(usd).toLocaleString('es-CL')+'</div></div>'
+    +'</div>'
+    +'<div style="font-size:10px;color:var(--text3);margin-top:8px">'+_fmla+'</div>';
+}
+// ═══════════════════════════════════════════════
+// NOR LÓGICA
+// ═══════════════════════════════════════════════
+function calcularNorAceptada() {
+  const norVal = document.getElementById('norTendered').value;
+  if (!norVal) {
+    document.getElementById('norAceptada').value = '';
+    document.getElementById('norAjuste').textContent = '';
+    document.getElementById('norHint') && (document.getElementById('norHint').textContent = '');
+    return;
+  }
+
+  // Detectar cliente y tipo de operación para aplicar regla NOR correcta
+  const clienteId = document.getElementById('selCliente')?.value || 'manual';
+  const tipoOp = document.getElementById('selTipoOp')?.value || 'carga';
+  const ltipoCliente = document.getElementById('ltCargaTipo')?.value || '';
+
+  // Determinar regla NOR según cliente
+  let norRegla = 'shinc'; // default
+  if (clienteId.indexOf('ct:') === 0) {
+    const cfgCt = ltGetContratos()[clienteId.slice(3)];
+    if (cfgCt) norRegla = tipoOp === 'descarga' ? (cfgCt.nor_regla_destino||'shinc') : (cfgCt.nor_regla_origen||'shinc');
+  } else if (clienteId === 'manual' && ltipoCliente) {
+    const cfg = LT_CLIENTES_CONFIG[ltipoCliente];
+    norRegla = tipoOp === 'descarga' ? (cfg?.nor_regla_destino||'shinc') : (cfg?.nor_regla_origen||'shinc');
+  } else {
+    const norReglaMap = {
+      'Trafigura': tipoOp === 'descarga' ? 'traf_destino' : 'traf_origen',
+      'Candelaria': tipoOp === 'descarga' ? 'candelaria_destino' : 'candelaria_origen',
+      'BHP': 'shinc_atdn',
+      'Codelco': 'shinc_atdn',
+      'KMP': tipoOp === 'descarga' ? 'kmp_destino' : 'shinc_atdn',
+    };
+    norRegla = norReglaMap[clienteId] || 'shinc';
+  }
+
+  const norDt = new Date(norVal);
+  let norAceptada = norDt;
+  let ajusteMsg = '';
+
+  if (norRegla === 'shinc' || norRegla === 'shinc_atdn') {
+    // SHINC: NOR válida a cualquier hora
+    norAceptada = norDt;
+    ajusteMsg = '✓ SHINC — NOR válida a cualquier hora';
+
+  } else if (norRegla === 'traf_origen' || norRegla === 'traf_destino') {
+    // Trafigura: next working day 08:00
+    // LP: MO-FR 08:00-17:00 · SAT 09:00-12:00
+    const h = norDt.getHours(), m = norDt.getMinutes(), day = norDt.getDay();
+    let enHorario = false;
+    if (day >= 1 && day <= 5 && (h > 8 || (h === 8 && m >= 0)) && h < 17) enHorario = true;
+    if (day === 6 && (h > 9 || (h === 9 && m >= 0)) && (h < 12 || (h === 12 && m === 0))) enHorario = true;
+
+    if (enHorario) {
+      norAceptada = norDt;
+      ajusteMsg = '✓ NOR dentro de horario · Trafigura: válida inmediatamente';
+    } else {
+      // Avanzar al siguiente día hábil 08:00
+      const d = new Date(norDt);
+      d.setDate(d.getDate() + 1);
+      d.setHours(8, 0, 0, 0);
+      while (d.getDay() === 0) { d.setDate(d.getDate() + 1); } // skip domingo
+      norAceptada = d;
+      ajusteMsg = `⚠️ Trafigura: next working day 08:00 → ${d.toLocaleDateString('es-CL')} 08:00`;
+    }
+
+  } else if (norRegla === 'candelaria_origen') {
+    // Candelaria LP: SHINC berthed o desde waiting place
+    norAceptada = norDt;
+    ajusteMsg = '✓ Candelaria LP: SHINC — NOR válida a cualquier hora (berthed o waiting place)';
+
+  } else if (norRegla === 'candelaria_destino') {
+    // Candelaria DP: MO-FR 09:00-17:00 · SAT 09:00-12:00 · SATSHEX UU IUATUTC
+    const h = norDt.getHours(), m = norDt.getMinutes(), day = norDt.getDay();
+    let enHorario = false;
+    if (day >= 1 && day <= 5 && h >= 9 && h < 17) enHorario = true;
+    if (day === 6 && h >= 9 && (h < 12 || (h === 12 && m === 0))) enHorario = true;
+
+    if (enHorario) {
+      norAceptada = norDt;
+      ajusteMsg = '✓ Candelaria DP: NOR dentro de horario oficina';
+    } else if (day === 6 && (h >= 12)) {
+      // Sábado después de 12:00 → lunes 09:00
+      const d = new Date(norDt);
+      d.setDate(d.getDate() + (8 - d.getDay()) % 7 || 7);
+      d.setHours(9, 0, 0, 0);
+      norAceptada = d;
+      ajusteMsg = `⚠️ Candelaria DP: SATSHEX → Lunes ${d.toLocaleDateString('es-CL')} 09:00`;
+    } else if (day === 0) {
+      // Domingo → lunes 09:00
+      const d = new Date(norDt);
+      d.setDate(d.getDate() + 1);
+      d.setHours(9, 0, 0, 0);
+      norAceptada = d;
+      ajusteMsg = `⚠️ Candelaria DP: Domingo → Lunes ${d.toLocaleDateString('es-CL')} 09:00`;
+    } else {
+      // Fuera de horario → mismo día o siguiente día hábil 09:00
+      const d = new Date(norDt);
+      if (h >= 17) { d.setDate(d.getDate() + 1); while(d.getDay()===0||d.getDay()===6) d.setDate(d.getDate()+1); }
+      d.setHours(9, 0, 0, 0);
+      norAceptada = d;
+      ajusteMsg = `⚠️ Candelaria DP: fuera horario → ${d.toLocaleDateString('es-CL')} 09:00`;
+    }
+
+  } else if (norRegla === 'kmp_destino') {
+    // KMP Bremen: SAT NOON SHEX MO-FR 09:00-17:00 · SAT 09:00-12:00
+    const h = norDt.getHours(), day = norDt.getDay();
+    let enHorario = (day >= 1 && day <= 5 && h >= 9 && h < 17) ||
+                    (day === 6 && h >= 9 && h < 12);
+    if (enHorario) {
+      norAceptada = norDt;
+      ajusteMsg = '✓ KMP Bremen: NOR dentro de horario oficina';
+    } else {
+      const d = new Date(norDt);
+      if (day === 6 && h >= 12) { d.setDate(d.getDate() + 2); d.setHours(9,0,0,0); }
+      else if (day === 0) { d.setDate(d.getDate() + 1); d.setHours(9,0,0,0); }
+      else { if(h>=17) d.setDate(d.getDate()+1); while(d.getDay()===0||d.getDay()===6) d.setDate(d.getDate()+1); d.setHours(9,0,0,0); }
+      norAceptada = d;
+      ajusteMsg = `⚠️ KMP Bremen: SAT NOON SHEX → ${d.toLocaleDateString('es-CL')} 09:00`;
+    }
+  }
+
+  // Formatear para datetime-local
+  const pad = n => String(n).padStart(2,'0');
+  const fmt = d => `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+  document.getElementById('norAceptada').value = fmt(norAceptada);
+  document.getElementById('norAjuste').textContent = ajusteMsg;
+  actualizarTimeline();
+}
+
+function ajustarNorOficina(dt) {
+  const d = new Date(dt);
+  const dayOfWeek = d.getDay(); // 0=dom, 6=sab
+  const hour = d.getHours();
+  const min = d.getMinutes();
+
+  // Fin de semana → lunes 08:00
+  if (dayOfWeek === 0) { // domingo
+    d.setDate(d.getDate() + 1);
+    d.setHours(8, 0, 0, 0);
+    return { dt: d, ajustado: true, motivo: 'Domingo → Lunes 08:00' };
+  }
+  if (dayOfWeek === 6) { // sábado
+    d.setDate(d.getDate() + 2);
+    d.setHours(8, 0, 0, 0);
+    return { dt: d, ajustado: true, motivo: 'Sábado → Lunes 08:00' };
+  }
+
+  // Antes de 08:00
+  if (hour < 8) {
+    d.setHours(8, 0, 0, 0);
+    return { dt: d, ajustado: true, motivo: `Antes de oficina → ${formatHM(d)}` };
+  }
+
+  // Después de 17:00 → siguiente día hábil 08:00
+  if (hour >= 17) {
+    d.setDate(d.getDate() + 1);
+    // Si cae en fin de semana, avanzar
+    while (d.getDay() === 0 || d.getDay() === 6) d.setDate(d.getDate() + 1);
+    d.setHours(8, 0, 0, 0);
+    return { dt: d, ajustado: true, motivo: `Después de 17:00 → ${d.toLocaleDateString('es-CL')} 08:00` };
+  }
+
+  return { dt: d, ajustado: false, motivo: '' };
+}
+
+// ═══════════════════════════════════════════════
+// TIMELINE
+// ═══════════════════════════════════════════════
+// Calcula First Hook y Last Hook por cliente BHP/Codelco desde cuadrillas de turnos
+function calcHooksPorCliente(escTurnos) {
+  const box = document.getElementById('hooksClientesBox');
+  const rows = document.getElementById('hooksClientesRows');
+  if (!box || !rows) return;
+
+  // Clientes de interes
+  const CLIENTES_HOOK = ['bhp','codelco','BHP','Codelco'];
+  const clientesPresentes = {};
+
+  escTurnos.forEach(function(t) {
+    (t.cuadrillas||[]).forEach(function(c) {
+      if (!c.cliente) return;
+      const cl = c.cliente.trim();
+      const clKey = cl.toLowerCase();
+      if (clKey !== 'bhp' && clKey !== 'codelco') return;
+      if (!clientesPresentes[clKey]) clientesPresentes[clKey] = {nombre: cl, eventos: []};
+
+      // Calcular fecha real de fin de la cuadrilla
+      const fechaFin = (function() {
+        const hi = t.hi||'00:00', hf = t.hf||'00:00';
+        const hiMin = parseInt(hi)*60+parseInt((hi.split(':')[1]||0));
+        const hfMin = parseInt(hf)*60+parseInt((hf.split(':')[1]||0));
+        if (hfMin <= hiMin || t.turno === 'noche') {
+          const d = new Date((t.fecha||'')+'T00:00:00');
+          d.setDate(d.getDate()+1);
+          return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+        }
+        return t.fecha||'';
+      })();
+
+      const dtIni = new Date((t.fecha||'')+'T'+(c.hora_ini||t.hi||'00:00'));
+      const dtFin = new Date(fechaFin+'T'+(c.hora_fin||t.hf||'00:00'));
+      if (!isNaN(dtIni)) clientesPresentes[clKey].eventos.push({ini: dtIni, fin: dtFin});
+    });
+  });
+
+  const claves = Object.keys(clientesPresentes);
+  if (!claves.length) { box.style.display = 'none'; return; }
+
+  const fmtDtES = function(dt) {
+    if (!dt || isNaN(dt)) return '—';
+    return dt.toLocaleDateString('es-CL',{day:'2-digit',month:'2-digit',year:'numeric'})+' '
+          +dt.toLocaleTimeString('es-CL',{hour:'2-digit',minute:'2-digit'});
+  };
+
+  let html = '';
+  claves.forEach(function(clKey) {
+    const cl = clientesPresentes[clKey];
+    if (!cl.eventos.length) return;
+    const firstHook = new Date(Math.min.apply(null, cl.eventos.map(function(e){return e.ini;})));
+    const lastHook  = new Date(Math.max.apply(null, cl.eventos.map(function(e){return e.fin;})));
+    const diffMs = lastHook - firstHook;
+    const diffH = Math.floor(diffMs/3600000);
+    const diffM = Math.floor((diffMs%3600000)/60000);
+    html += '<div style="display:grid;grid-template-columns:120px 1fr 1fr 120px;gap:8px;align-items:center;padding:6px 0;border-bottom:1px solid rgba(255,255,255,0.06)">'
+      + '<div style="font-weight:700;color:var(--text)">' + cl.nombre + '</div>'
+      + '<div><div style="font-size:9px;color:var(--text2);text-transform:uppercase;letter-spacing:1px">First Hook</div>'
+      + '<div style="color:var(--green);font-weight:600">' + fmtDtES(firstHook) + '</div></div>'
+      + '<div><div style="font-size:9px;color:var(--text2);text-transform:uppercase;letter-spacing:1px">Last Hook</div>'
+      + '<div style="color:var(--red);font-weight:600">' + fmtDtES(lastHook) + '</div></div>'
+      + '<div style="text-align:right"><div style="font-size:9px;color:var(--text2)">Dur. operativa</div>'
+      + '<div style="color:var(--gold);font-weight:600">' + diffH + 'h ' + String(diffM).padStart(2,'0') + 'm</div></div>'
+      + '</div>';
+  });
+
+  rows.innerHTML = html || '<div style="color:var(--text2);font-size:12px">Sin cuadrillas con contrato asignado</div>';
+  box.style.display = 'block';
+}
+
+function actualizarTimeline() {
+  const norT = document.getElementById('norTendered').value;
+  const norA = document.getElementById('norAceptada').value;
+  const fh = document.getElementById('firstHook').value;
+  const lh = document.getElementById('lastHook').value;
+  const hl = parseFloat(document.getElementById('horasLibres').value) || 0;
+
+  if (!norA) { document.getElementById('norTimeline').style.display = 'none'; return; }
+
+  const norADt = new Date(norA);
+  const layStart = new Date(norADt.getTime() + hl * 3600000);
+
+  document.getElementById('norTimeline').style.display = 'flex';
+  document.getElementById('tlNorT').textContent = norT ? formatDtShort(new Date(norT)) : '—';
+  document.getElementById('tlNorA').textContent = formatDtShort(norADt);
+  document.getElementById('tlLayStart').textContent = formatDtShort(layStart);
+  document.getElementById('tlFirstHook').textContent = fh ? formatDtShort(new Date(fh)) : '—';
+  document.getElementById('tlLastHook').textContent = lh ? formatDtShort(new Date(lh)) : '—';
+}
+
+// ═══════════════════════════════════════════════
+// CALCULAR
+// ═══════════════════════════════════════════════
+function calcular() {
+  const norA = document.getElementById('norAceptada').value;
+  const fh = document.getElementById('firstHook').value;
+  const lh = document.getElementById('lastHook').value;
+  const hl = parseFloat(document.getElementById('horasLibres').value);
+  const demRate = parseFloat(document.getElementById('demurrageRate').value);
+  const despRate = parseFloat(document.getElementById('despatchRate').value);
+  const detMin = parseFloat(document.getElementById('detExcluidas').value) || 0;
+  const tipo = document.getElementById('selTipoOp').value;
+
+  if (!norA || !fh || !lh) {
+    alert('Complete NOR aceptada, First Hook y Last Hook para calcular.');
+    return;
+  }
+
+  const norADt = new Date(norA);
+  const fhDt = new Date(fh);
+  const lhDt = new Date(lh);
+
+  // Laytime start = NOR aceptada + horas libres
+  const layStart = new Date(norADt.getTime() + hl * 3600000);
+
+  // Tiempo contable = desde layStart hasta Last Hook
+  // Pero si First Hook fue antes de layStart, el tiempo empieza desde layStart igualmente
+  const timeStartMs = Math.max(layStart.getTime(), fhDt.getTime());
+  const timeEndMs = lhDt.getTime();
+
+  // Total horas usadas (bruto)
+  let totalMs = Math.max(0, timeEndMs - timeStartMs);
+  let totalHoras = totalMs / 3600000;
+
+  // Deducir detenciones excluibles (FIOST)
+  const detHoras = detMin / 60;
+  if (tipo === 'embarque') totalHoras = Math.max(0, totalHoras - detHoras);
+
+  // Laytime permitido
+  // Si cliente Manual y hay tasa definida: laytime = tonelaje / tasa (en horas)
+  const clienteIdCalc = document.getElementById('selCliente')?.value || 'manual';
+  const totalTonCalc = parseFloat(document.getElementById('totalTon').value) || 0;
+  let laytimeAllowed = hl;
+  // Si hl es 0 y hay tasa definida, calcular laytime = tonelaje / tasa (aplica a Trafigura y otros con rate-based laytime)
+  if (totalTonCalc > 0) {
+    const tasaCarga = parseFloat(document.getElementById('tasaCargaManual')?.value) || 0;
+    const tasaDescarga = parseFloat(document.getElementById('tasaDescargaManual')?.value) || 0;
+    const tasaAplicable = tipo === 'descarga' ? tasaDescarga : tasaCarga;
+    if (tasaAplicable > 0 && (hl === 0 || clienteIdCalc === 'manual')) {
+      laytimeAllowed = (totalTonCalc / tasaAplicable) * 24; // horas
+    }
+  }
+  const timeUsed = totalHoras;
+  const balance = laytimeAllowed - timeUsed; // positivo = despatch, negativo = demurrage
+
+  let monto, tipo_resultado;
+  if (balance < -0.01) {
+    // Demurrage
+    tipo_resultado = 'demurrage';
+    monto = Math.abs(balance) / 24 * demRate;
+  } else if (balance > 0.01) {
+    // Despatch
+    tipo_resultado = 'despatch';
+    monto = balance / 24 * despRate;
+  } else {
+    tipo_resultado = 'even';
+    monto = 0;
+  }
+
+  currentCalc = {
+    id: genId(),
+    fecha: new Date().toISOString(),
+    nave: document.getElementById('selNave').value || '—',
+    escala: document.getElementById('selEscala').options[document.getElementById('selEscala').selectedIndex]?.text || '—',
+    tipo,
+    cliente: document.getElementById('selCliente').options[document.getElementById('selCliente').selectedIndex]?.text || 'Manual',
+    norTendered: document.getElementById('norTendered').value,
+    norAceptada: norA,
+    layStart: toDatetimeLocal(layStart),
+    firstHook: fh,
+    lastHook: lh,
+    laytimeAllowed,
+    timeUsed,
+    balance,
+    demRate,
+    despRate,
+    detMin,
+    tipo_resultado,
+    monto,
+    totalTon: parseFloat(document.getElementById('totalTon').value) || 0,
+  };
+
+  // Mostrar resultado
+  const box = document.getElementById('resultadoBox');
+  box.className = 'resultado-box ' + tipo_resultado;
+  box.style.display = 'block';
+
+  const labels = { demurrage: '⚠️ DEMURRAGE', despatch: '✅ DESPATCH', even: '⚖️ EVEN — Sin costo' };
+  const subs = {
+    demurrage: `La nave estuvo ${formatHoras(Math.abs(balance))} más de lo permitido`,
+    despatch: `Operación completada ${formatHoras(balance)} antes de lo permitido`,
+    even: 'El tiempo usado coincide exactamente con el laytime permitido',
+  };
+
+  document.getElementById('resultTitulo').textContent = labels[tipo_resultado];
+  document.getElementById('resultSubtitulo').textContent = subs[tipo_resultado];
+  document.getElementById('resultMonto').textContent = tipo_resultado === 'even' ? 'USD 0' :
+    `${tipo_resultado === 'demurrage' ? '−' : '+'}  USD ${Math.round(monto).toLocaleString('es-CL')}`;
+
+  document.getElementById('resLaytime').textContent = formatHoras(laytimeAllowed);
+  document.getElementById('resTiempoUsado').textContent = formatHoras(timeUsed);
+  document.getElementById('resBalance').textContent = (balance >= 0 ? '+' : '') + formatHoras(balance);
+  document.getElementById('resNorAc').textContent = formatDtShort(norADt);
+  document.getElementById('resLayStart').textContent = formatDtShort(layStart);
+  document.getElementById('resRate').textContent = `USD ${(tipo_resultado === 'despatch' ? despRate : demRate).toLocaleString()}`;
+
+  // Explicación narrativa
+  const clienteNombre = document.getElementById('ltCliente')?.value || document.getElementById('selCliente')?.options[document.getElementById('selCliente')?.selectedIndex]?.text || 'El cargador';
+  const puertoNombre = document.getElementById('selPuerto')?.options[document.getElementById('selPuerto')?.selectedIndex]?.text || 'este puerto';
+  const explicacion = document.getElementById('resultExplicacion');
+  if (explicacion) {
+    if (tipo_resultado === 'demurrage') {
+      explicacion.innerHTML = `
+        <strong style="color:var(--red)">📋 Resumen ejecutivo</strong><br>
+        <strong>Volans recibe pago de ${clienteNombre}</strong> por concepto de <em>demurrage</em>.<br><br>
+        Según contrato, la nave tenía derecho a <strong>${formatHoras(laytimeAllowed)}</strong> de laytime en ${puertoNombre}
+        (${Math.round(parseFloat(document.getElementById('totalTon').value)||0).toLocaleString('es-CL')} T ÷ tasa contractual).<br>
+        Sin embargo, la operación tomó <strong>${formatHoras(timeUsed)}</strong> en total.<br><br>
+        La nave estuvo <strong style="color:var(--red)">${formatHoras(Math.abs(balance))} más</strong> de lo permitido,
+        generando un demurrage de <strong style="color:var(--red)">USD ${Math.round(monto).toLocaleString('es-CL')}</strong>
+        (${formatHoras(Math.abs(balance))} × USD ${demRate.toLocaleString()}/día).
+      `;
+    } else if (tipo_resultado === 'despatch') {
+      explicacion.innerHTML = `
+        <strong style="color:var(--green)">📋 Resumen ejecutivo</strong><br>
+        <strong>Volans paga a ${clienteNombre}</strong> por concepto de <em>despatch</em>.<br><br>
+        Según contrato, la nave tenía <strong>${formatHoras(laytimeAllowed)}</strong> de laytime en ${puertoNombre}
+        (${Math.round(parseFloat(document.getElementById('totalTon').value)||0).toLocaleString('es-CL')} T ÷ tasa contractual).<br>
+        La operación se completó en solo <strong>${formatHoras(timeUsed)}</strong>.<br><br>
+        Se liberó la nave <strong style="color:var(--green)">${formatHoras(balance)} antes</strong> de lo permitido,
+        generando un despatch de <strong style="color:var(--green)">USD ${Math.round(monto).toLocaleString('es-CL')}</strong>
+        (${formatHoras(balance)} × USD ${despRate.toLocaleString()}/día).
+      `;
+    } else {
+      explicacion.innerHTML = `
+        <strong>📋 Resumen ejecutivo</strong><br>
+        La operación en ${puertoNombre} utilizó exactamente el laytime permitido de <strong>${formatHoras(laytimeAllowed)}</strong>.
+        No hay demurrage ni despatch. Sin costo adicional para ninguna de las partes.
+      `;
+    }
+  }
+
+  // KPIs
+  document.getElementById('kpiRow').style.display = 'flex';
+  document.getElementById('kpiAllowed').textContent = formatHoras(laytimeAllowed);
+  document.getElementById('kpiUsed').textContent = formatHoras(timeUsed);
+  document.getElementById('kpiBalance').textContent = (balance >= 0 ? '+' : '') + formatHoras(balance);
+  document.getElementById('kpiBalance').className = 'kpi-val ' + (balance < -0.01 ? 'dem' : balance > 0.01 ? 'desp' : '');
+  document.getElementById('kpiMonto').textContent = tipo_resultado === 'even' ? 'USD 0' :
+    `${tipo_resultado === 'demurrage' ? '−' : '+'} USD ${Math.round(monto).toLocaleString('es-CL')}`;
+  document.getElementById('kpiMonto').className = 'kpi-val ' + (tipo_resultado === 'demurrage' ? 'dem' : tipo_resultado === 'despatch' ? 'desp' : '');
+
+  box.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+function limpiarCalculo() {
+  ['norTendered','norAceptada','firstHook','lastHook','detExcluidas'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.value = id === 'detExcluidas' ? '0' : '';
+  });
+  document.getElementById('totalTon').value = 0;
+  document.getElementById('resultadoBox').style.display = 'none';
+  document.getElementById('norTimeline').style.display = 'none';
+  document.getElementById('kpiRow').style.display = 'none';
+  document.getElementById('norAjuste').textContent = '';
+  currentCalc = null;
+}
+
+// ═══════════════════════════════════════════════
+// GUARDAR EN HISTORIAL
+// ═══════════════════════════════════════════════
+function cargarCalcPrevio(tipo) {
+  const calc = window._calcsPrevios?.[tipo];
+  if (!calc) return;
+  // Restaurar campos del formulario
+  if (calc.norTendered) document.getElementById('norTendered').value = calc.norTendered;
+  if (calc.firstHook) document.getElementById('firstHook').value = calc.firstHook;
+  if (calc.lastHook) document.getElementById('lastHook').value = calc.lastHook;
+  if (calc.totalTon) document.getElementById('totalTon').value = calc.totalTon;
+  if (calc.detMin !== undefined) document.getElementById('detMin').value = calc.detMin;
+  // Seleccionar tipo operación
+  const selTipo = document.getElementById('selTipoOp');
+  if (selTipo && calc.tipo) selTipo.value = calc.tipo;
+  // Recalcular
+  calcularNorAceptada();
+  calcular();
+  showAlert(`✅ Cálculo de ${tipo} cargado`, 'ok');
+}
+
+function guardarCalculo() {
+  if (!currentCalc) return;
+
+  // 1. Guardar en historial general
+  const hist = JSON.parse(localStorage.getItem(LS_HISTORIAL) || '[]');
+  // Reemplazar si ya existe cálculo del mismo tipo para esta escala
+  const escalaId = document.getElementById('selEscala')?.value || '';
+  const tipo = currentCalc.tipo || 'carga';
+  const keyExist = hist.findIndex(h => h.escala_id === escalaId && h.tipo === tipo);
+  if (keyExist >= 0) hist.splice(keyExist, 1);
+  const calcConEscala = {...currentCalc, escala_id: escalaId};
+  hist.unshift(calcConEscala);
+  localStorage.setItem(LS_HISTORIAL, JSON.stringify(hist));
+
+  // 2. Guardar en la escala dentro de vms_viajes
+  if (escalaId) {
+    const viajes = JSON.parse(localStorage.getItem('vms_viajes') || '[]');
+    let guardado = false;
+    viajes.forEach(v => {
+      const esc = (v.escalas||[]).find(e => e.id === escalaId);
+      if (esc) {
+        if (!esc.calculos_chartering) esc.calculos_chartering = {};
+        esc.calculos_chartering[tipo] = calcConEscala;
+        guardado = true;
+      }
+    });
+    if (guardado) {
+      localStorage.setItem('vms_viajes', JSON.stringify(viajes));
+      // Sincronizar a Supabase
+      viajes.forEach(v => {
+        if ((v.escalas||[]).some(e => e.id === escalaId)) {
+          try { VA?.pushToDB && VA.pushToDB(v); } catch(e) {}
+        }
+      });
+    }
+  }
+
+  mostrarToast('GUARDADO');
+}
+
+// ═══════════════════════════════════════════════
+// HISTORIAL
+// ═══════════════════════════════════════════════
+function renderHistorial() {
+  const hist = JSON.parse(localStorage.getItem(LS_HISTORIAL) || '[]');
+  const container = document.getElementById('historialContainer');
+  if (hist.length === 0) {
+    container.innerHTML = '<div class="empty"><span>📋</span>No hay cálculos guardados aún</div>';
+    return;
+  }
+  let html = `<table class="hist-table">
+    <thead><tr>
+      <th>Fecha Cálculo</th>
+      <th>Nave / Escala</th>
+      <th>Cliente</th>
+      <th>Tipo Op.</th>
+      <th>Laytime</th>
+      <th>Usado</th>
+      <th>Balance</th>
+      <th>Resultado</th>
+      <th>Monto USD</th>
+      <th></th>
+    </tr></thead><tbody>`;
+  hist.forEach(c => {
+    const badgeClass = c.tipo_resultado === 'demurrage' ? 'dem' : c.tipo_resultado === 'despatch' ? 'desp' : 'even';
+    const badgeLabel = c.tipo_resultado === 'demurrage' ? 'DEMURRAGE' : c.tipo_resultado === 'despatch' ? 'DESPATCH' : 'EVEN';
+    const montoStr = c.tipo_resultado === 'even' ? '0' :
+      `${c.tipo_resultado === 'demurrage' ? '−' : '+'}${Math.round(c.monto).toLocaleString('es-CL')}`;
+    html += `<tr>
+      <td class="mono" style="font-size:11px">${new Date(c.fecha).toLocaleDateString('es-CL')}<br>${new Date(c.fecha).toLocaleTimeString('es-CL',{hour:'2-digit',minute:'2-digit'})}</td>
+      <td><div style="font-weight:600">${c.nave}</div><div style="font-size:11px;color:var(--text2)">${c.escala}</div></td>
+      <td style="font-size:12px">${c.cliente}</td>
+      <td style="font-size:11px;text-transform:uppercase;letter-spacing:.5px">${c.tipo === 'descarga' ? 'SHINC' : 'FIOST'}</td>
+      <td class="mono">${formatHoras(c.laytimeAllowed)}</td>
+      <td class="mono">${formatHoras(c.timeUsed)}</td>
+      <td class="mono">${(c.balance >= 0 ? '+' : '') + formatHoras(c.balance)}</td>
+      <td><span class="badge ${badgeClass}">${badgeLabel}</span></td>
+      <td class="mono" style="font-weight:700">${montoStr}</td>
+      <td><button class="btn-danger" onclick="eliminarHistorial('${c.id}')">🗑</button></td>
+    </tr>`;
+  });
+  html += '</tbody></table>';
+  container.innerHTML = html;
+}
+
+function eliminarHistorial(id) {
+  if (!confirm('¿Eliminar este registro?')) return;
+  const hist = JSON.parse(localStorage.getItem(LS_HISTORIAL) || '[]').filter(x => x.id !== id);
+  localStorage.setItem(LS_HISTORIAL, JSON.stringify(hist));
+  renderHistorial();
+}
+
+// ═══════════════════════════════════════════════
+// LAYTIME / SOF — LÓGICA CLÁUSULA 17
+// ═══════════════════════════════════════════════
+
+// ── Reglas NOR por cliente ────────────────────────────────────────────────
+// 'cl17_origen'   → Cláusula 17 origen:  L-V 09-17, Sáb 09-12, laytime = NOR+12h (USC)
+// 'cl17_destino'  → Cláusula 17 destino: L-V 09-17, Sáb 09-12, ≤12:00→15:00 / >12:00→next 06:00
+// 'traf_origen'   → Trafigura origen:    L-V 08-17, Sáb 09-12, laytime = next working day 08:00
+// 'traf_destino'  → Trafigura destino:   L-V 08-17 (sin sáb), laytime = next working day 08:00
+// 'kmp_origen'    → KMP harina:          L-V 09-17, Sáb 09-12, laytime = NOR+12h (USC)
+
+// ── Contratos — editables vía modal ───────────────────────────────────────
+// Los valores base se definen aquí; pueden sobreescribirse desde localStorage
+const LT_CONTRATOS_BASE = {
+  'codelco_angamos': {
+    label: 'Codelco — Cátodos (Angamos)',
+    cliente: 'Codelco',
+    producto: 'Cátodos Cobre',
+    condicion: 'FIOST · SHINC',
+    demRate: 18000, despRate: null,
+    detention_origen_h: 24, detention_destino_h: 24,
+    nor_regla_origen: 'shinc_atdn', nor_regla_destino: 'shinc_atdn',
+    nor_nota_origen: 'SHINC ATDN — horario oficina por confirmar',
+    nor_nota_destino: 'SHINC ATDN',
+    exclusiones: 'Swell al arribo: 50% · Huelgas · 1st May, 18/19 Sep, 24/25 Dec · POB to All Fast',
+    tasa_descarga: 'CQD',
+    puertos: [
+      { id: 'angamos', nombre: 'Angamos', tipo: 'carga', tasa: 0, shinc: true, nor_regla: 'shinc_atdn', nota: 'SHINC ATDN · 24h gracia' },
+      { id: 'dunkerque', nombre: 'Dunkerque', tipo: 'descarga', tasa: 0, shinc: true, nor_regla: 'shinc_atdn', nota: 'CQD · 24h gracia destino' },
+      { id: 'rotterdam', nombre: 'Rotterdam', tipo: 'descarga', tasa: 0, shinc: true, nor_regla: 'shinc_atdn', nota: 'CQD · 24h gracia destino' },
+    ],
+  },
+  'bhp_angamos': {
+    label: 'BHP — Cátodos (Angamos)',
+    cliente: 'BHP',
+    producto: 'Cátodos Cobre',
+    condicion: 'Free In SHINC · Liner Out · CQD',
+    demRate: 18000, despRate: null,
+    detention_origen_h: 48, detention_destino_h: 0,
+    nor_regla_origen: 'shinc_atdn', nor_regla_destino: 'shinc_atdn',
+    nor_nota_origen: 'SHINC ATDN',
+    nor_nota_destino: 'Liner Out — DP n/a',
+    exclusiones: 'LP: Swell 50% · Anchorage to All Fast · LP & DP Anchorage to All Fast',
+    tasa_descarga: 'CQD',
+    puertos: [
+      { id: 'angamos', nombre: 'Angamos', tipo: 'carga', tasa: 0, shinc: true, nor_regla: 'shinc_atdn', nota: 'SHINC · 48h gracia origen' },
+      { id: 'dunkerque', nombre: 'Dunkerque', tipo: 'descarga', tasa: 0, shinc: true, nor_regla: 'shinc_atdn', nota: 'Liner Out · CQD' },
+    ],
+  },
+  'candelaria_coquimbo': {
+    label: 'Candelaria / SPOT — Concentrado (Coquimbo)',
+    cliente: 'Teck Candelaria',
+    producto: 'Concentrado Cobre',
+    condicion: 'SHINC',
+    demRate: 20000, despRate: 10000,
+    detention_origen_h: 12, detention_destino_h: 0,
+    nor_regla_origen: 'candelaria_origen', nor_regla_destino: 'candelaria_destino',
+    nor_nota_origen: 'LP: 24h SHINC berthed o desde waiting place si berth no accesible',
+    nor_nota_destino: 'DP: Lun-Vie 09:00-17:00 · Sáb 09:00-12:00',
+    exclusiones: 'Mal tiempo no cuenta como Laytime · Strike: 50% después de 48h · SATSHEX UU IUATUTC',
+    tasa_carga: 6000, tasa_descarga: 4500,
+    puertos: [
+      { id: 'coquimbo', nombre: 'Coquimbo', tipo: 'carga', tasa: 6000, shinc: true, nor_regla: 'candelaria_origen', nota: 'SHINC · 12h gracia · 6,000 T/día' },
+      { id: 'brunsbuttel', nombre: 'Brunsbüttel', tipo: 'descarga', tasa: 4500, shinc: false, nor_regla: 'candelaria_destino', nota: 'SATSHEX UU · 4,500 T/día', shex: { satnoon: true, monMorn: '06:00' } },
+    ],
+  },
+  'kmp_harina': {
+    label: 'KMP — Harina de Pescado (ARI/CHM)',
+    cliente: 'KMP Fish Meal',
+    producto: 'Harina de Pescado',
+    condicion: 'FIOST SHINC',
+    demRate: 25000, despRate: 12500,
+    detention_origen_h: 12, detention_destino_h: 0,
+    nor_regla_origen: 'shinc_atdn', nor_regla_destino: 'kmp_destino',
+    nor_nota_origen: 'LP: SHINC ATDN berthed o desde waiting place',
+    nor_nota_destino: 'DP: MO-FR 09:00-17:00 · SAT 09:00-12:00 berthed o desde waiting place. Same day 15:00 o 06:00 next day si NOR después de 12:00',
+    exclusiones: 'Lluvia no cuenta como Laytime · Huelgas · Shifting anchorage to berth · Legal holidays UU IUATUTC',
+    tasa_carga_arica: 2500, tasa_carga_chimbote: 1500, tasa_descarga: 3500,
+    puertos: [
+      { id: 'arica',    nombre: 'Arica',    tipo: 'carga',    tasa: 2500, shinc: true,  nor_regla: 'shinc_atdn',  nota: 'SHINC · 2,500 T/día · 12h gracia' },
+      { id: 'chimbote', nombre: 'Chimbote', tipo: 'carga',    tasa: 1500, shinc: true,  nor_regla: 'shinc_atdn',  nota: 'SHINC · 1,500 T/día · 12h gracia' },
+      { id: 'bremen',   nombre: 'Bremen',   tipo: 'descarga', tasa: 3500, shinc: false, nor_regla: 'kmp_destino', nota: 'SAT NOON SHEX · 3,500 T/día', shex: { satnoon: true, monMorn: '06:00' } },
+    ],
+  },
+  'trafigura_zinc': {
+    label: 'Trafigura / SPOT — Zinc/Plomo (ARI/CLL)',
+    cliente: 'Trafigura',
+    producto: 'Zn Concs / Pb Concs',
+    condicion: 'SHINC',
+    demRate: 19000, despRate: 9500,
+    detention_origen_h: 0, detention_destino_h: 0,
+    nor_regla_origen: 'traf_origen', nor_regla_destino: 'traf_destino',
+    nor_nota_origen: 'LP TT: Next working day 08:00 hrs · MO-FR 08:00-17:00 · SAT 09:00-12:00',
+    nor_nota_destino: 'DP TT: Next working day 08:00 hrs · SHEX UU ATUTC',
+    exclusiones: 'Mal tiempo no cuenta como Laytime · Huelgas · SHEX UU ATUTC',
+    tasa_carga_callao: 15000, tasa_carga_arica: 5000, tasa_descarga: 5000,
+    puertos: [
+      { id: 'arica',   nombre: 'Arica',   tipo: 'carga',    tasa: 5000,  shinc: true,  nor_regla: 'traf_origen',  nota: 'SHINC · 5,000 T/día' },
+      { id: 'callao',  nombre: 'Callao',  tipo: 'carga',    tasa: 15000, shinc: true,  nor_regla: 'traf_origen',  nota: 'SHINC · 15,000 T/día' },
+      { id: 'antwerp', nombre: 'Antwerp', tipo: 'descarga', tasa: 5000,  shinc: false, nor_regla: 'traf_destino', nota: 'SHEX UU ATUTC · 5,000 T/día', shex: { satnoon: true, monMorn: '06:00' } },
+    ],
+  },
+  // Alias para compatibilidad backwards
+  'codelco_concentrado': { label: 'Codelco — Concentrado Cobre', demRate: 18000, despRate: null,
+    puertos: [
+      { id: 'angamos', nombre: 'Angamos', tipo: 'carga', tasa: 0, shinc: true, nor_regla: 'shinc_atdn', nota: 'SHINC ATDN' },
+      { id: 'dunkerque', nombre: 'Dunkerque', tipo: 'descarga', tasa: 0, shinc: true, nor_regla: 'shinc_atdn', nota: 'CQD' },
+    ]},
+  'codelco_catodos': { label: 'Codelco — Cátodos Cobre', demRate: 18000, despRate: null,
+    puertos: [
+      { id: 'angamos', nombre: 'Angamos', tipo: 'carga', tasa: 0, shinc: true, nor_regla: 'shinc_atdn', nota: 'SHINC ATDN' },
+      { id: 'dunkerque', nombre: 'Dunkerque', tipo: 'descarga', tasa: 0, shinc: true, nor_regla: 'shinc_atdn', nota: 'CQD' },
+    ]},
+  'bhp_concentrado': { label: 'BHP — Concentrado Cobre', demRate: 18000, despRate: null,
+    puertos: [
+      { id: 'angamos', nombre: 'Angamos', tipo: 'carga', tasa: 0, shinc: true, nor_regla: 'shinc_atdn', nota: 'SHINC · 48h gracia' },
+      { id: 'dunkerque', nombre: 'Dunkerque', tipo: 'descarga', tasa: 0, shinc: true, nor_regla: 'shinc_atdn', nota: 'CQD' },
+    ]},
+  'trafigura_concentrado_cobre': { label: 'Trafigura — Concentrado Cobre', demRate: 19000, despRate: 9500,
+    puertos: [
+      { id: 'callao', nombre: 'Callao', tipo: 'carga', tasa: 15000, shinc: true, nor_regla: 'traf_origen', nota: 'SHINC' },
+      { id: 'antwerp', nombre: 'Antwerp', tipo: 'descarga', tasa: 5000, shinc: false, nor_regla: 'traf_destino', nota: 'SHEX UU', shex: { satnoon: true, monMorn: '06:00' } },
+    ]},
+  'trafigura_grajales_zinc_antofagasta': { label: 'Trafigura — Zinc Grajales Antofagasta→Antwerp', demRate: 21000, despRate: 10500,
+    nor_regla_origen: 'traf_origen', nor_regla_destino: 'traf_destino',
+    puertos: [
+      { id: 'antofagasta', nombre: 'Antofagasta', tipo: 'carga', tasa: 10000, shinc: true, nor_regla: 'traf_origen', nota: 'SHINC · 10,000 T/día · Next working day 08:00' },
+      { id: 'antwerp',     nombre: 'Antwerp',     tipo: 'descarga', tasa: 4500, shinc: false, nor_regla: 'traf_destino', nota: 'SHEX UU · 4,500 T/día', shex: { satnoon: true, monMorn: '06:00' } },
+    ]},
+  'trafigura_grajales_zinc': { label: 'Trafigura — Zinc Grajales Arica→Antwerp', demRate: 21000, despRate: 10500,
+    nor_regla_origen: 'traf_grajales_origen', nor_regla_destino: 'traf_destino',
+    puertos: [
+      { id: 'arica',   nombre: 'Arica',   tipo: 'carga',    tasa: 4500, shinc: true,  nor_regla: 'traf_grajales_origen', nota: 'WWD SHINC · 4,500 T/día · 12h después NOR o inicio laycan (lo mayor)' },
+      { id: 'antwerp', nombre: 'Antwerp', tipo: 'descarga', tasa: 4500, shinc: false, nor_regla: 'traf_destino', nota: 'SHEX UU · 4,500 T/día', shex: { satnoon: true, monMorn: '06:00' } },
+    ]},
+  'trafigura_concentrado_zinc': { label: 'Trafigura — Concentrado Zinc', demRate: 19000, despRate: 9500,
+    puertos: [
+      { id: 'arica', nombre: 'Arica', tipo: 'carga', tasa: 5000, shinc: true, nor_regla: 'traf_origen', nota: 'SHINC' },
+      { id: 'antwerp', nombre: 'Antwerp', tipo: 'descarga', tasa: 5000, shinc: false, nor_regla: 'traf_destino', nota: 'SHEX UU', shex: { satnoon: true, monMorn: '06:00' } },
+    ]},
+  'trafigura_concs_antwerp_rio': { label: 'Trafigura — Concs Antwerp→Rio de Janeiro (CP 19/05/2026)', demRate: 25000, despRate: 12500,
+    nor_regla_origen: 'traf_8am_calendar', nor_regla_destino: 'traf_8am_calendar',
+    puertos: [
+      { id: 'antwerp', nombre: 'Antwerp', tipo: 'carga', tasa: 5000, shinc: false, nor_regla: 'traf_8am_calendar', nota: 'SatpmSHEX UU · 5,000 WMT/día · NOR SHINC 08-17 · Laytime 08:00 día sgte' },
+      { id: 'rio_de_janeiro', nombre: 'Rio de Janeiro', tipo: 'descarga', tasa: 4000, shinc: true, nor_regla: 'traf_8am_calendar', nota: 'SHINC · 4,000 WMT/día · NOR SHINC 08-17 · Laytime 08:00 día sgte' },
+    ]},
+};
+
+// Cargar overrides desde localStorage si existen
+function ltGetContratos() {
+  try {
+    const saved = JSON.parse(localStorage.getItem('vms_contratos_lt')||'null');
+    if (saved) return Object.assign({}, LT_CONTRATOS_BASE, saved);
+  } catch(e) {}
+  return LT_CONTRATOS_BASE;
+}
+
+const LT_CLIENTES_CONFIG = ltGetContratos();
+
+// Orden preferido del selector (los historicos primero, luego el resto y los custom)
+const LT_SELECTOR_ORDEN = ['codelco_concentrado','codelco_catodos','bhp_concentrado','kmp_harina','trafigura_concentrado_cobre','trafigura_concentrado_zinc','trafigura_grajales_zinc','trafigura_grajales_zinc_antofagasta','trafigura_concs_antwerp_rio','candelaria_coquimbo'];
+
+function ltPoblarSelectorContratos() {
+  var sel = document.getElementById('ltCargaTipo');
+  if (!sel) return;
+  var cfg = ltGetContratos();
+  var actual = sel.value;
+  var conPuertos = Object.keys(cfg).filter(function(k){
+    return cfg[k] && Array.isArray(cfg[k].puertos) && cfg[k].puertos.length;
+  });
+  var keys = LT_SELECTOR_ORDEN.filter(function(k){ return conPuertos.indexOf(k) !== -1; });
+  conPuertos.forEach(function(k){ if (keys.indexOf(k) === -1) keys.push(k); });
+  sel.innerHTML = keys.map(function(k){
+    var lbl = (cfg[k].label || k) + (cfg[k].custom ? ' ★' : '');
+    return '<option value="' + k + '">' + lbl + '</option>';
+  }).join('');
+  if (actual && keys.indexOf(actual) !== -1) sel.value = actual;
+}
+
+// ═══ SYNC CONTRATOS ↔ SUPABASE (tabla contratos_lt) ═══
+const LT_SB_URL = 'https://rnwynxkibfakcicpctuk.supabase.co';
+const LT_SB_KEY = 'sb_publishable__4vfUqx9aKEOnuXpktoTZg_viYGqs2L';
+
+function ltSBHeaders() {
+  return {
+    'apikey': LT_SB_KEY,
+    'Authorization': 'Bearer ' + LT_SB_KEY,
+    'Content-Type': 'application/json'
+  };
+}
+
+// Baja los contratos compartidos y los mezcla sobre localStorage (Supabase = fuente de verdad)
+async function ltSyncContratosDesdeDB() {
+  try {
+    var r = await fetch(LT_SB_URL + '/rest/v1/contratos_lt?select=key,data', { headers: ltSBHeaders() });
+    if (!r.ok) { console.warn('[contratos_lt] GET fallo', r.status, '(¿tabla creada?)'); return; }
+    var rows = await r.json();
+    if (!rows || !rows.length) return;
+    var saved = JSON.parse(localStorage.getItem('vms_contratos_lt') || '{}');
+    rows.forEach(function(row){ if (row.key && row.data) saved[row.key] = row.data; });
+    localStorage.setItem('vms_contratos_lt', JSON.stringify(saved));
+    Object.assign(LT_CLIENTES_CONFIG, ltGetContratos());
+    ltPoblarSelectorContratos();
+    if (typeof renderClientesGrid === 'function') renderClientesGrid();
+    if (document.getElementById('contratos-editor-grid') && typeof renderContratosEditor === 'function') renderContratosEditor();
+    console.log('[contratos_lt] sync OK — ' + rows.length + ' contrato(s) desde Supabase');
+  } catch(e) { console.warn('[contratos_lt] sync error', e); }
+}
+
+// Sube (upsert) un contrato
+async function ltSyncContratoADB(key, data) {
+  try {
+    var h = ltSBHeaders();
+    h['Prefer'] = 'resolution=merge-duplicates';
+    var r = await fetch(LT_SB_URL + '/rest/v1/contratos_lt?on_conflict=key', {
+      method: 'POST',
+      headers: h,
+      body: JSON.stringify([{ key: key, data: data, updated_at: new Date().toISOString() }])
+    });
+    if (!r.ok) console.warn('[contratos_lt] upsert fallo', r.status, key);
+  } catch(e) { console.warn('[contratos_lt] upsert error', e); }
+}
+
+// Sube todos los contratos guardados (usado por Guardar cambios del editor)
+async function ltSyncContratosADB(saved) {
+  var keys = Object.keys(saved || {});
+  for (var i = 0; i < keys.length; i++) {
+    await ltSyncContratoADB(keys[i], saved[keys[i]]);
+  }
+}
+
+// Elimina un contrato de Supabase (y verifica — PATCH/DELETE devuelven 204 aunque no exista la fila)
+async function ltBorrarContratoDB(key) {
+  try {
+    var r = await fetch(LT_SB_URL + '/rest/v1/contratos_lt?key=eq.' + encodeURIComponent(key), {
+      method: 'DELETE',
+      headers: ltSBHeaders()
+    });
+    if (!r.ok) { console.warn('[contratos_lt] delete fallo', r.status, key); return; }
+    var chk = await fetch(LT_SB_URL + '/rest/v1/contratos_lt?key=eq.' + encodeURIComponent(key) + '&select=key', { headers: ltSBHeaders() });
+    if (chk.ok) {
+      var rows = await chk.json();
+      if (rows && rows.length) console.warn('[contratos_lt] la fila ' + key + ' sigue existiendo tras DELETE');
+    }
+  } catch(e) { console.warn('[contratos_lt] delete error', e); }
+}
+
+// Compatibilidad backwards — usado por selector anterior
+const LT_PUERTOS = {
+  concentrado: LT_CLIENTES_CONFIG['codelco_concentrado'].puertos,
+  harina:      LT_CLIENTES_CONFIG['kmp_harina'].puertos,
+};
+
+let ltResultados = {}; // resultados por puerto id
+
+function ltCargarEscalas() {
+  // Poblar selector de naves desde localStorage
+  const sel = document.getElementById('ltNave');
+  if (sel) {
+    const naves = JSON.parse(localStorage.getItem('vms_naves')||'[]').filter(n=>n.id&&n.nombre&&n.id!=='__usuarios_volans__');
+    const cur = sel.value;
+    sel.innerHTML = '<option value="">— Todas las naves —</option>' +
+      naves.map(n=>`<option value="${n.id}" ${n.id===cur?'selected':''}>${n.nombre}</option>`).join('');
+  }
+  ltActualizarPuertos();
+}
+
+function ltActualizarPuertos() {
+  const clienteKey = document.getElementById('ltCargaTipo').value;
+  const cfg = LT_CLIENTES_CONFIG[clienteKey];
+  if (!cfg) return;
+  const puertos = cfg.puertos || [];
+  // Precargar demRate del cliente
+  document.getElementById('ltDemRate').value = cfg.demRate;
+  ltResultados = {};
+  ltGiras = {};
+  const container = document.getElementById('ltPuertosContainer');
+  container.innerHTML = puertos.map(p => ltRenderPuertoBlock(p, cfg)).join('');
+  document.getElementById('ltResumenViaje').style.display = 'none';
+  setTimeout(ltAutoPopular, 100);
+}
+
+function ltAutoPopular() {
+  var clienteKey = document.getElementById('ltCargaTipo').value;
+  var cfg = LT_CLIENTES_CONFIG[clienteKey];
+  if (!cfg) return;
+  var naveSelId = (document.getElementById('ltNave')||{}).value || '';
+  // Sin nave seleccionada NO se auto-pobla: evita traer NOR/tonelaje de viajes de otras naves
+  if (!naveSelId) { console.log('[ltAutoPopular] sin nave seleccionada — campos quedan vacíos'); return; }
+  var todosViajes = JSON.parse(localStorage.getItem('vms_viajes') || '[]');
+  var viajes = todosViajes.filter(v => v.nave_id === naveSelId || v.nave === naveSelId);
+  var turnos = JSON.parse(localStorage.getItem('vms_turnos') || '[]');
+  var ltNorm = function(s){ return (s||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').trim(); };
+  cfg.puertos.forEach(function(p) {
+    var escala = null;
+    var pn = ltNorm(p.nombre);
+    viajes.forEach(function(v) {
+      (v.escalas || []).forEach(function(e) {
+        var ep = ltNorm(e.puerto);
+        if (ep && pn && (ep.indexOf(pn) !== -1 || pn.indexOf(ep) !== -1)) escala = e;
+      });
+    });
+    console.log('[ltAutoPopular] puerto contrato "' + p.nombre + '" -> ' + (escala ? ('escala "' + escala.puerto + '" (id ' + escala.id + ', ata: ' + (escala.ata||'sin ATA') + ')') : 'SIN MATCH'));
+    if (!escala) return;
+    var norEl = document.getElementById('lt_' + p.id + '_nor');
+    if (norEl && escala.ata) norEl.value = escala.ata;
+    var etaEl2 = document.getElementById('lt_' + p.id + '_eta');
+    if (etaEl2 && escala.eta) etaEl2.value = escala.eta;
+    var layEl = document.getElementById('lt_' + p.id + '_layStart');
+    // layStart se calcula via ltCalcNorAceptada
+    var tEscala = turnos.filter(function(t) { return t.escala_id === escala.id; });
+    // Fallback: si no hay turnos por escala_id, buscar por nave_id + puerto (normalizado)
+    if (!tEscala.length && escala.puerto) {
+      var _pNorm = function(s) { return (s||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').trim(); };
+      var _puertoN = _pNorm(escala.puerto);
+      var _naveSelId = (document.getElementById('ltNave')||{}).value || '';
+      var _navesLS = JSON.parse(localStorage.getItem('vms_naves')||'[]');
+      var _naveObj = _navesLS.find(function(n){ return n.id === _naveSelId; });
+      var _naveNombre = _pNorm(_naveObj ? _naveObj.nombre : _naveSelId);
+      tEscala = turnos.filter(function(t) {
+        var tNave = _pNorm(t.nave);
+        var tPuerto = _pNorm(t.puerto);
+        var matchNave = (tNave === _naveNombre) || (t.nave_id === _naveSelId);
+        var matchPuerto = (tPuerto.indexOf(_puertoN) !== -1 || _puertoN.indexOf(tPuerto) !== -1);
+        return matchNave && matchPuerto;
+      });
+      if (tEscala.length) console.log('[Chartering] Fallback nave+puerto: ' + tEscala.length + ' turnos para ' + escala.puerto);
+    }
+    if (tEscala.length) {
+      var fh = tEscala.map(function(t){return t.fecha&&t.hi?t.fecha+'T'+t.hi:'';}).filter(Boolean).sort()[0];
+      var lh = tEscala.map(function(t){return t.fecha&&t.hf?t.fecha+'T'+t.hf:'';}).filter(Boolean).sort().reverse()[0];
+      var ton = tEscala.reduce(function(s,t){return s+((t.kpi&&t.kpi.totalTon)||0);},0);
+      var fhEl = document.getElementById('lt_' + p.id + '_fh');
+      var lhEl = document.getElementById('lt_' + p.id + '_lh');
+      var tonEl = document.getElementById('lt_' + p.id + '_ton');
+      if (fhEl && fh) fhEl.value = fh;
+      if (lhEl && lh) lhEl.value = lh;
+      if (tonEl) tonEl.value = ton;
+      var det = tEscala.reduce(function(s,t){return s+(t.detenciones||[]).filter(function(d){return d.resp==='Climático'||d.resp==='Nave';}).reduce(function(s2,d){return s2+d.min;},0);},0);
+      var detEl = document.getElementById('lt_'+p.id+'_det');
+      if(detEl) detEl.value = det;
+    }
+    ltCalcNorAceptada(p.id, p.nor_regla);
+    ltRecalcular(p.id);
+  });
+}
+
+
+function ltRenderPuertoBlock(p, cfg) {
+  const esCarga = p.tipo === 'carga';
+  const icono = esCarga ? '🚢' : '🏭';
+  const tipoLabel = esCarga ? 'Puerto de Carga' : 'Puerto de Descarga';
+  const tasaLabel = `${p.tasa.toLocaleString()} T/día · ${p.nota}`;
+
+  // Reglas NOR según regla del puerto
+  const norReglaHtml = (() => {
+    switch (p.nor_regla) {
+      case 'cl17_origen': return `
+        <div class="nor-rules-box">
+          <strong>Cláusula 17 — Origen (SHINC):</strong> NOR válida L–V 09:00–17:00 · Sáb 09:00–12:00.<br>
+          Laytime inicia <strong>12h post-NOR</strong>. Si First Hook ocurre antes → laytime desde First Hook (USC).
+        </div>`;
+      case 'cl17_destino': return `
+        <div class="nor-rules-box">
+          <strong>Cláusula 17 — Destino:</strong> NOR válida L–V 09:00–17:00 · Sáb 09:00–12:00.<br>
+          NOR ≤ 12:00 → laytime a las <strong>15:00</strong>. NOR > 12:00 → laytime <strong>06:00 próximo día hábil</strong>.<br>
+          Shifting no cuenta. SHEX Sáb 12:00–Lun 06:00 excluido salvo UU.
+        </div>`;
+      case 'traf_grajales_origen': return `
+        <div class="nor-rules-box">
+          <strong>Trafigura Grajales — Origen Arica:</strong> SHINC · NOR válida a cualquier hora.<br>
+          Laytime inicia <strong>12 horas después del NOR</strong> o al <strong>inicio del laycan</strong>, lo que ocurra <strong>más tarde</strong>.<br>
+          Si lay can ya expiró, laytime corre desde NOR+12h. Ingresar laycan inicio en campo correspondiente.
+        </div>`;
+      case 'traf_origen': return `
+        <div class="nor-rules-box">
+          <strong>Trafigura — Origen:</strong> NOR válida L–V 08:00–17:00 · Sáb 09:00–12:00.<br>
+          Laytime inicia <strong>next working day 08:00</strong>. Todo tiempo previo acumulado cuenta igualmente.
+        </div>`;
+      case 'traf_destino': return `
+        <div class="nor-rules-box">
+          <strong>Trafigura — Destino:</strong> NOR válida L–V 08:00–17:00 (sin sábados).<br>
+          Laytime inicia <strong>next working day 08:00</strong>. Todo tiempo previo acumulado cuenta igualmente.<br>
+          SHEX Sáb 12:00–Lun 06:00 excluido salvo UU (ATUTC).
+        </div>`;
+      default: return '';
+    }
+  })();
+
+  return `
+  <div class="lt-puerto-block" id="ltblock-${p.id}">
+    <div class="lt-puerto-header">
+      <span class="lt-puerto-icon">${icono}</span>
+      <div>
+        <span class="lt-puerto-nombre">${p.nombre}</span>
+        <span class="lt-puerto-tipo">${tipoLabel}</span>
+      </div>
+      <div class="lt-puerto-rate">${tasaLabel}</div>
+    </div>
+    <div class="lt-puerto-body">
+      ${norReglaHtml}
+
+      ${p.nor_regla === 'traf_grajales_origen' ? `
+    <div class="field" style="margin-bottom:12px">
+      <label>📅 Laycan Inicio (si aplica — dejar vacío si expiró)</label>
+      <input type="datetime-local" id="lt_arica_laycan_inicio"
+        oninput="ltCalcNorAceptada('${p.id}','${p.nor_regla}')"
+        style="border:1.5px solid #f59e0b">
+      <span style="font-size:11px;color:#92400e">Si el laycan ya expiró, dejar en blanco — laytime = NOR+12h</span>
+    </div>` : ''}
+    <div class="form-grid cols3" style="margin-bottom:16px">
+        <div class="field">
+          <label>Fecha/Hora NOR Tendered</label>
+          <input type="datetime-local" id="lt_${p.id}_nor" oninput="ltCalcNorAceptada('${p.id}','${p.nor_regla}')">
+        </div>
+        <div class="field">
+          <label>NOR Aceptada <span style="font-size:10px;color:var(--text2)">(auto)</span></label>
+          <input type="datetime-local" id="lt_${p.id}_norA" readonly style="opacity:.7">
+          <span class="hint" id="lt_${p.id}_norHint" style="color:var(--gold)"></span>
+        </div>
+        <div class="field">
+          <label>Laytime Inicia <span style="font-size:10px;color:var(--text2)">(auto)</span></label>
+          <input type="datetime-local" id="lt_${p.id}_layStart" readonly style="opacity:.7">
+          <span class="hint" id="lt_${p.id}_layHint" style="color:var(--accent2)"></span>
+        </div>
+      </div>
+
+      <div class="form-grid cols3" style="margin-bottom:16px">
+        <div class="field">
+          <label>First Hook (inicio operaciones)</label>
+          <input type="datetime-local" id="lt_${p.id}_fh" oninput="ltRecalcular('${p.id}')">
+          <span class="hint" id="lt_${p.id}_fhHint"></span>
+        </div>
+        <div class="field">
+          <label>Last Hook (fin operaciones)</label>
+          <input type="datetime-local" id="lt_${p.id}_lh" oninput="ltRecalcular('${p.id}')">
+        </div>
+        <div class="field">
+          <label>Tonelaje Operado (T)</label>
+          <input type="number" id="lt_${p.id}_ton" value="0" step="100" oninput="ltRecalcular('${p.id}')">
+        </div>
+      </div>
+
+      <div style="margin-bottom:16px;background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:10px 12px">
+        <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap">
+          <label style="font-weight:700;font-size:12px;margin:0">⚓ Giras — salida de sitio por prioridad de otra nave</label>
+          <button class="btn" style="font-size:11px;padding:4px 10px" onclick="ltGiraAdd('${p.id}')">➕ Agregar gira</button>
+        </div>
+        <div id="lt_${p.id}_giras"></div>
+        <span class="hint" id="lt_${p.id}_girasHint"></span>
+      </div>
+
+      ${!esCarga ? `
+      <div class="form-grid cols2" style="margin-bottom:16px">
+        <div class="field">
+          <label>Horas Shifting (roads → berth)</label>
+          <input type="number" id="lt_${p.id}_shifting" value="0" step="0.5" oninput="ltRecalcular('${p.id}')">
+          <span class="hint">No cuenta como laytime ni demurrage</span>
+        </div>
+        <div class="field">
+          <label>Horas SHEX usadas por acuerdo (UU)</label>
+          <input type="number" id="lt_${p.id}_shex_uu" value="0" step="0.5" oninput="ltRecalcular('${p.id}')">
+          <span class="hint">Horas Sáb 12:00–Lun 06:00 que sí se trabajaron</span>
+        </div>
+      </div>` : ''}
+
+      <div class="form-grid cols2" style="margin-bottom:16px">
+        <div class="field">
+          <label>Detenciones excluibles (min)</label>
+          <input type="number" id="lt_${p.id}_det" value="0" step="1" oninput="ltRecalcular('${p.id}')">
+          <span class="hint">Solo causas expresamente excluidas en contrato</span>
+        </div>
+        <div class="field">
+          <label>ETA revisada (referencia SOF)</label>
+          <input type="datetime-local" id="lt_${p.id}_eta">
+        </div>
+      </div>
+
+      <!-- Tabla timeline resultado -->
+      <div id="lt_${p.id}_resultado" style="display:none">
+        <div class="section-title" style="margin-top:4px">Statement of Facts — ${p.nombre}</div>
+        <table class="lt-timeline">
+          <thead><tr>
+            <th>Evento</th><th>Fecha / Hora</th><th>Hrs Laytime</th><th>Obs</th>
+          </tr></thead>
+          <tbody id="lt_${p.id}_tbody"></tbody>
+        </table>
+        <div class="lt-result-bar" id="lt_${p.id}_resbar">
+          <div>
+            <div class="lt-result-label" id="lt_${p.id}_reslabel"></div>
+            <div style="font-size:12px;color:var(--text2);margin-top:2px" id="lt_${p.id}_ressub"></div>
+          </div>
+          <div style="display:flex;gap:24px;margin-left:auto;align-items:center;flex-wrap:wrap">
+            <div style="text-align:right">
+              <div style="font-size:10px;text-transform:uppercase;letter-spacing:1.5px;color:var(--text2)">Laytime Permitido</div>
+              <div style="font-family:'JetBrains Mono',monospace;font-weight:700" id="lt_${p.id}_allowed"></div>
+            </div>
+            <div style="text-align:right">
+              <div style="font-size:10px;text-transform:uppercase;letter-spacing:1.5px;color:var(--text2)">Tiempo Usado</div>
+              <div style="font-family:'JetBrains Mono',monospace;font-weight:700" id="lt_${p.id}_used"></div>
+            </div>
+            <div class="lt-result-monto" id="lt_${p.id}_resmonto"></div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>`;
+}
+
+// ── NOR ACEPTADA según cláusula 17 ──────────────────────────────────────
+function ltCalcNorAceptada(pid, regla) {
+  const norVal = document.getElementById(`lt_${pid}_nor`).value;
+  if (!norVal) {
+    document.getElementById(`lt_${pid}_norA`).value = '';
+    document.getElementById(`lt_${pid}_norHint`).textContent = '';
+    document.getElementById(`lt_${pid}_layStart`).value = '';
+    document.getElementById(`lt_${pid}_layHint`).textContent = '';
+    return;
+  }
+
+  const norDt = new Date(norVal);
+  if (isNaN(norDt.getTime())) {
+    document.getElementById(`lt_${pid}_norA`).value = '';
+    document.getElementById(`lt_${pid}_norHint`).textContent = '';
+    document.getElementById(`lt_${pid}_layStart`).value = '';
+    document.getElementById(`lt_${pid}_layHint`).textContent = '';
+    return;
+  }
+  let norAceptada, layStart, norHint, layHint;
+
+  // ── Ajustar ventana NOR según regla ─────────────────────────────────────
+  if (regla === 'traf_destino') {
+    // Trafigura destino: solo L-V 08:00-17:00 (sin sábado)
+    const aj = ltAjustarVentanaNOR(norDt, { abreLV: '08:00', cierreLV: '17:00', sabado: false });
+    norAceptada = aj.dt; norHint = aj.hint;
+  } else if (regla === 'traf_grajales_origen') {
+    // Grajales: SHINC, NOR válida cualquier hora
+    norAceptada = norDt;
+    norHint = 'SHINC → NOR válida a cualquier hora';
+  } else if (regla === 'traf_origen') {
+    // Trafigura origen: L-V 08:00-17:00, Sáb 09:00-12:00
+    const aj = ltAjustarVentanaNOR(norDt, { abreLV: '08:00', cierreLV: '17:00', sabado: true });
+    norAceptada = aj.dt; norHint = aj.hint;
+  } else if (regla === 'traf_8am_calendar') {
+    // SHINC — ventana de tender 08:00-17:00, pero válida cualquier día (sin saltar findes/feriados)
+    const h = norDt.getHours(), m = norDt.getMinutes(), minDia = h * 60 + m;
+    if (minDia < 8 * 60) {
+      norAceptada = new Date(norDt); norAceptada.setHours(8, 0, 0, 0);
+      norHint = '⚠️ Antes 08:00 → 08:00 (SHINC, mismo día)';
+    } else if (minDia >= 17 * 60) {
+      norAceptada = new Date(norDt); norAceptada.setDate(norAceptada.getDate() + 1); norAceptada.setHours(8, 0, 0, 0);
+      norHint = '⚠️ Después 17:00 → 08:00 día siguiente (SHINC)';
+    } else {
+      norAceptada = norDt;
+      norHint = '✓ NOR dentro de horario 08:00–17:00 (SHINC)';
+    }
+  } else {
+    // Cláusula 17: L-V 09:00-17:00, Sáb 09:00-12:00
+    const aj = ltAjustarVentanaNOR(norDt, { abreLV: '09:00', cierreLV: '17:00', sabado: true });
+    norAceptada = aj.dt; norHint = aj.hint;
+  }
+
+  // ── Calcular Laytime Start según regla ──────────────────────────────────
+  if (regla === 'cl17_origen') {
+    // +12h (USC aplicado en ltRecalcular)
+    layStart = new Date(norAceptada.getTime() + 12 * 3600000);
+    layHint = 'NOR aceptada + 12h (USC si First Hook antes)';
+
+  } else if (regla === 'cl17_destino') {
+    // ≤12:00 → 15:00 mismo día / >12:00 → 06:00 próximo día hábil
+    const h = norAceptada.getHours(), m = norAceptada.getMinutes();
+    if (h * 60 + m <= 12 * 60) {
+      layStart = new Date(norAceptada); layStart.setHours(15, 0, 0, 0);
+      layHint = 'NOR ≤ 12:00 → Laytime a las 15:00';
+    } else {
+      layStart = ltNextWorkingDay(norAceptada, '06:00');
+      layHint = `NOR > 12:00 → 06:00 ${layStart.toLocaleDateString('es-CL')}`;
+    }
+
+  } else if (regla === 'candelaria_origen' || regla === 'candelaria_destino') {
+      // SHINC - NOR a cualquier hora, laytime inicia inmediatamente
+      norAceptada = norDt;
+      norHint = 'SHINC → NOR válida a cualquier hora';
+      layStart = new Date(norDt);
+      layHint = 'NOR aceptada → Laytime inicia inmediatamente';
+    } else if (regla === 'traf_grajales_origen') {
+    // +12h después NOR o inicio laycan, lo mayor
+    const norPlus12 = new Date(norAceptada.getTime() + 12 * 3600000);
+    // Buscar laycan inicio desde campo del formulario si existe
+    const laycanInput = document.getElementById('lt_arica_laycan_inicio');
+    let laycanInicio = laycanInput && laycanInput.value ? new Date(laycanInput.value) : null;
+    if (laycanInicio && !isNaN(laycanInicio) && laycanInicio > norPlus12) {
+      layStart = laycanInicio;
+      layHint = `Inicio laycan ${laycanInicio.toLocaleString('es-CL')} > NOR+12h → laytime desde laycan`;
+    } else {
+      layStart = norPlus12;
+      layHint = `NOR+12h = ${norPlus12.toLocaleString('es-CL')} (laycan expirado o NOR+12h mayor)`;
+    }
+  } else if (regla === 'traf_origen' || regla === 'traf_destino') {
+    // Next working day 08:00
+    layStart = ltNextWorkingDay(norAceptada, '08:00');
+    layHint = `Next working day 08:00 → ${layStart.toLocaleDateString('es-CL')}`;
+  } else if (regla === 'traf_8am_calendar') {
+    // SHINC — laytime inicia 08:00 del día CALENDARIO siguiente (no salta fines de semana/feriados)
+    const d = new Date(norAceptada);
+    d.setDate(d.getDate() + 1);
+    d.setHours(8, 0, 0, 0);
+    layStart = d;
+    layHint = `SHINC → 08:00 día calendario siguiente → ${layStart.toLocaleDateString('es-CL')}`;
+  }
+
+  if (!layStart) { layStart = norAceptada; layHint = 'Laytime desde NOR aceptada'; }
+
+  document.getElementById(`lt_${pid}_norA`).value    = toDatetimeLocal(norAceptada);
+  document.getElementById(`lt_${pid}_norHint`).textContent = norHint;
+  document.getElementById(`lt_${pid}_layStart`).value = toDatetimeLocal(layStart);
+  document.getElementById(`lt_${pid}_layHint`).textContent = layHint;
+
+  ltRecalcular(pid);
+}
+
+function ltNextWorkingDay(dt, hora) {
+  const d = new Date(dt);
+  d.setDate(d.getDate() + 1);
+  while (d.getDay() === 0 || d.getDay() === 6) d.setDate(d.getDate() + 1);
+  const [h, m] = hora.split(':').map(Number);
+  d.setHours(h, m, 0, 0);
+  return d;
+}
+
+function ltAjustarVentanaNOR(dt, opts = {}) {
+  const abreLV    = opts.abreLV    || '09:00';
+  const cierreLV  = opts.cierreLV  || '17:00';
+  const conSabado = opts.sabado !== false;
+
+  const [aH, aM]   = abreLV.split(':').map(Number);
+  const [cH, cM]   = cierreLV.split(':').map(Number);
+  const abreMin    = aH * 60 + aM;
+  const cierraMin  = cH * 60 + cM;
+
+  const d = new Date(dt);
+  const dow = d.getDay();
+  const minDia = d.getHours() * 60 + d.getMinutes();
+
+  // Domingo → lunes apertura
+  if (dow === 0) {
+    d.setDate(d.getDate() + 1); d.setHours(aH, aM, 0, 0);
+    return { dt: d, hint: `⚠️ Domingo → Lunes ${abreLV}` };
+  }
+
+  // Sábado
+  if (dow === 6) {
+    if (!conSabado) {
+      // Sin sábado → lunes apertura
+      d.setDate(d.getDate() + 2); d.setHours(aH, aM, 0, 0);
+      return { dt: d, hint: `⚠️ Sábado (no válido) → Lunes ${abreLV}` };
+    }
+    // Con sábado: solo 09:00–12:00
+    if (minDia < 9 * 60) { d.setHours(9, 0, 0, 0); return { dt: d, hint: '⚠️ Sáb antes 09:00 → 09:00' }; }
+    if (minDia >= 12 * 60) {
+      d.setDate(d.getDate() + 2); d.setHours(aH, aM, 0, 0);
+      return { dt: d, hint: `⚠️ Sáb ≥ 12:00 → Lunes ${abreLV}` };
+    }
+    return { dt: d, hint: '✓ Sáb dentro de ventana 09:00–12:00' };
+  }
+
+  // L-V
+  if (minDia < abreMin) { d.setHours(aH, aM, 0, 0); return { dt: d, hint: `⚠️ Antes ${abreLV} → ${abreLV}` }; }
+  if (minDia >= cierraMin) {
+    d.setDate(d.getDate() + 1);
+    while (d.getDay() === 0 || d.getDay() === 6) d.setDate(d.getDate() + 1);
+    d.setHours(aH, aM, 0, 0);
+    return { dt: d, hint: `⚠️ Después ${cierreLV} → ${d.toLocaleDateString('es-CL')} ${abreLV}` };
+  }
+  return { dt: d, hint: `✓ NOR dentro de horario ${abreLV}–${cierreLV}` };
+}
+
+// ─── GIRAS (shifting a la gira por prioridad de sitio de otra nave) ───
+let ltGiras = {};
+function ltGiraAdd(pid){ (ltGiras[pid]=ltGiras[pid]||[]).push({sal:'',reg:'',man:1}); ltGiraRender(pid); ltRecalcular(pid); }
+function ltGiraDel(pid,i){ (ltGiras[pid]||[]).splice(i,1); ltGiraRender(pid); ltRecalcular(pid); }
+function ltGiraUpd(pid,i,campo,val){ if(ltGiras[pid]&&ltGiras[pid][i]){ ltGiras[pid][i][campo]= campo==='man' ? (parseFloat(val)||0) : val; ltRecalcular(pid); ltGiraHint(pid); } }
+function ltGiraHint(pid){
+  const hint=document.getElementById('lt_'+pid+'_girasHint'); if(!hint)return;
+  const arr=ltGiras[pid]||[];
+  if(!arr.length){hint.textContent='';return;}
+  const cfg=LT_CLIENTES_CONFIG[document.getElementById('ltCargaTipo')?.value]||{};
+  hint.textContent = cfg.gira_cuenta===false
+    ? 'Cláusula del contrato: TODO el período en gira se excluye del laytime.'
+    : 'La espera en gira CUENTA como laytime (riesgo charterer) — solo se excluyen las horas de maniobra de des/atraque.';
+}
+function ltGiraRender(pid){
+  const el=document.getElementById('lt_'+pid+'_giras'); if(!el)return;
+  const arr=ltGiras[pid]||[];
+  el.innerHTML=arr.map((g,i)=>`
+    <div class="form-grid cols3" style="margin-top:8px;align-items:end">
+      <div class="field"><label>Shifting a la gira (salida de sitio)</label><input type="datetime-local" value="${g.sal}" oninput="ltGiraUpd('${pid}',${i},'sal',this.value)"></div>
+      <div class="field"><label>Regreso de gira (reatraque)</label><input type="datetime-local" value="${g.reg}" oninput="ltGiraUpd('${pid}',${i},'reg',this.value)"></div>
+      <div class="field"><label>Hrs maniobra (des/atraque)</label><div style="display:flex;gap:6px"><input type="number" value="${g.man}" step="0.5" min="0" style="flex:1" oninput="ltGiraUpd('${pid}',${i},'man',this.value)"><button class="btn" style="padding:4px 10px" onclick="ltGiraDel('${pid}',${i})">✕</button></div></div>
+    </div>`).join('');
+  ltGiraHint(pid);
+}
+
+function ltRecalcular(pid) {
+  const clienteKey = document.getElementById('ltCargaTipo').value;
+  const cfg = LT_CLIENTES_CONFIG[clienteKey];
+  if (!cfg) return;
+  const puerto = cfg.puertos.find(p => p.id === pid);
+  if (!puerto) return;
+
+  const layStartVal = document.getElementById(`lt_${pid}_layStart`).value;
+  const fhVal       = document.getElementById(`lt_${pid}_fh`).value;
+  const lhVal       = document.getElementById(`lt_${pid}_lh`).value;
+  const ton         = parseFloat(document.getElementById(`lt_${pid}_ton`).value) || 0;
+  const detMin      = parseFloat(document.getElementById(`lt_${pid}_det`).value) || 0;
+  const demRate     = parseFloat(document.getElementById('ltDemRate').value) || cfg.demRate;
+  const despRate    = demRate / 2;
+
+  const shiftingHrs = puerto.tipo === 'descarga'
+    ? (parseFloat(document.getElementById(`lt_${pid}_shifting`)?.value) || 0) : 0;
+  const shexUU      = puerto.tipo === 'descarga'
+    ? (parseFloat(document.getElementById(`lt_${pid}_shex_uu`)?.value) || 0) : 0;
+
+  if (!layStartVal || !fhVal || !lhVal || ton === 0) {
+    document.getElementById(`lt_${pid}_resultado`).style.display = 'none';
+    return;
+  }
+
+  const layStartDt = new Date(layStartVal);
+  const fhDt       = new Date(fhVal);
+  const lhDt       = new Date(lhVal);
+
+  // USC aplica solo para reglas cl17_origen (Cláusula 17 carga)
+  // Trafigura: laytime SIEMPRE desde next working day 08:00, no USC
+  const uscDisponible = puerto.nor_regla === 'cl17_origen';
+  const uscAplicado   = uscDisponible && fhDt < layStartDt;
+  const conteoStartDt = uscAplicado ? fhDt : layStartDt;
+
+  // Hint First Hook
+  const fhHintEl = document.getElementById(`lt_${pid}_fhHint`);
+  if (fhHintEl) {
+    if (uscAplicado) fhHintEl.textContent = '⚡ USC aplicado — laytime arranca desde First Hook';
+    else if (uscDisponible && fhDt >= layStartDt) fhHintEl.textContent = 'First Hook posterior al laytime calculado';
+    else if (!uscDisponible) {
+      const _cfg2 = ltGetContratos()[document.getElementById('ltCargaTipo')?.value||''] || {};
+      const _regla2 = puerto.nor_regla || _cfg2.nor_regla_origen || '';
+      if (_regla2.includes('traf')) fhHintEl.textContent = 'Trafigura: laytime fijo desde next working day 08:00';
+      else if (_regla2.includes('candelaria')) fhHintEl.textContent = 'Candelaria: laytime inicia desde NOR aceptada (SHINC)';
+      else if (_regla2.includes('kmp')) fhHintEl.textContent = 'KMP: laytime inicia desde NOR aceptada';
+      else fhHintEl.textContent = 'Laytime inicia según regla NOR del contrato';
+    }
+    else fhHintEl.textContent = '';
+  }
+
+  // Laytime permitido = tonelaje / tasa (horas)
+  // Para puertos de descarga con múltiples orígenes (ej: KMP Bremen = Arica+Chimbote),
+  // sumar tonelaje de todos los puertos de carga del mismo contrato
+  let tonCalc = ton;
+  if (puerto.tipo === 'descarga') {
+    const puertosOrigen = (cfg.puertos || []).filter(p => p.tipo === 'carga');
+    if (puertosOrigen.length > 1) {
+      // Sumar tonelaje de todos los puertos de carga
+      const tonOrigenTotal = puertosOrigen.reduce((sum, po) => {
+        const elTon = document.getElementById('lt_' + po.id + '_ton');
+        return sum + (parseFloat(elTon?.value) || 0);
+      }, 0);
+      if (tonOrigenTotal > 0) {
+        tonCalc = tonOrigenTotal;
+        const hint = document.getElementById('lt_' + pid + '_fhHint');
+        if (hint) hint.textContent = 'Ton. descarga = suma puertos origen: ' + tonOrigenTotal.toLocaleString('es-CL') + ' T';
+      }
+    }
+  }
+  const laytimeAllowedHrs = (tonCalc / puerto.tasa) * 24;
+
+  // Tiempo usado desde inicio conteo hasta Last Hook
+  let tiempoUsadoHrs = Math.max(0, (lhDt - conteoStartDt) / 3600000);
+
+  // Deducir shifting (destino)
+  tiempoUsadoHrs -= shiftingHrs;
+
+  // Giras: salida de sitio por prioridad de otra nave (mid-operation)
+  const _giras=(typeof ltGiras!=='undefined'&&ltGiras[pid])?ltGiras[pid].filter(g=>g.sal||g.reg||(parseFloat(g.man)||0)>0):[];
+  let giraTotalHrs=0, giraManHrs=0;
+  _giras.forEach(g=>{
+    if(g.sal&&g.reg){const h=(new Date(g.reg)-new Date(g.sal))/3600000;if(h>0)giraTotalHrs+=h;}
+    giraManHrs+=Math.max(0,parseFloat(g.man)||0);
+  });
+  const giraCuenta = cfg.gira_cuenta !== false;
+  let giraExclHrs = 0;
+  if(_giras.length){
+    if(giraCuenta) giraExclHrs = giraTotalHrs>0 ? Math.min(giraManHrs,giraTotalHrs) : giraManHrs;
+    else giraExclHrs = giraTotalHrs>0 ? giraTotalHrs : giraManHrs;
+  }
+  tiempoUsadoHrs -= giraExclHrs;
+
+  // SHEX (destino con shex)
+  let shexExclHrs = 0;
+  if (puerto.shex) {
+    shexExclHrs = Math.max(0, ltCalcularSHEX(conteoStartDt, lhDt) - shexUU);
+    tiempoUsadoHrs -= shexExclHrs;
+  }
+
+  // Detenciones
+  const detHrs = detMin / 60;
+  tiempoUsadoHrs = Math.max(0, tiempoUsadoHrs - detHrs);
+
+  // Balance
+  const balance = laytimeAllowedHrs - tiempoUsadoHrs;
+  let tipo_res, monto;
+  if (balance < -0.01)      { tipo_res = 'dem';  monto = Math.abs(balance) / 24 * demRate; }
+  else if (balance > 0.01)  { tipo_res = 'desp'; monto = balance / 24 * despRate; }
+  else                      { tipo_res = 'even'; monto = 0; }
+
+  ltResultados[pid] = { puerto: puerto.nombre, tipo: puerto.tipo, laytimeAllowedHrs, tiempoUsadoHrs, balance, tipo_res, monto, demRate, despRate };
+
+  // ── Statement of Facts ──────────────────────────────────────────────────
+  const norTVal = document.getElementById(`lt_${pid}_nor`).value;
+  const norAVal = document.getElementById(`lt_${pid}_norA`).value;
+  const rows = [];
+
+  rows.push({ cls: 'row-key', evento: '📋 NOR Tendered',   dt: norTVal, hrs: '—', obs: 'Master notifica readiness' });
+  rows.push({ cls: 'row-key', evento: '✅ NOR Aceptada',   dt: norAVal, hrs: '—', obs: document.getElementById(`lt_${pid}_norHint`).textContent });
+  rows.push({ cls: 'row-key', evento: '⏱ Laytime Inicia', dt: toDatetimeLocal(conteoStartDt), hrs: '0h 00m',
+    obs: uscAplicado ? '⚡ USC — operación antes del laytime calculado' : document.getElementById(`lt_${pid}_layHint`).textContent });
+
+  if (shiftingHrs > 0)
+    rows.push({ cls: 'row-exc', evento: '🔗 Shifting (excluido)',     dt: '—', hrs: `-${formatHoras(shiftingHrs)}`, obs: 'Roads/anchorage → berth no cuenta' });
+  if (shexExclHrs > 0)
+    rows.push({ cls: 'row-exc', evento: '📅 SHEX excluido',           dt: 'Sáb 12:00–Lun 06:00', hrs: `-${formatHoras(shexExclHrs)}`, obs: `UU utilizado: ${formatHoras(shexUU)}` });
+  if (detHrs > 0)
+    rows.push({ cls: 'row-exc', evento: '🛑 Detenciones excluidas',   dt: '—', hrs: `-${formatHoras(detHrs)}`, obs: 'Según contrato' });
+
+  rows.push({ cls: 'row-key', evento: '⚓ First Hook',  dt: fhVal, hrs: '→ inicio op.', obs: '' });
+  _giras.forEach((g,gi)=>{
+    const suf=_giras.length>1?' #'+(gi+1):'';
+    if(g.sal)rows.push({cls:'row-key',evento:'⚓ Shifting a la gira'+suf,dt:g.sal,hrs:'—',obs:'Desatraque por prioridad de sitio de otra nave'});
+    if(g.reg)rows.push({cls:'row-key',evento:'🔁 Regreso de gira'+suf,dt:g.reg,hrs:'—',obs:giraCuenta?'Espera en gira cuenta como laytime':'Período en gira excluido por cláusula'});
+  });
+  if(giraExclHrs>0)rows.push({cls:'row-exc',evento:'🔗 Gira — '+(giraCuenta?'maniobras excluidas':'período completo excluido'),dt:'—',hrs:'-'+formatHoras(giraExclHrs),obs:giraCuenta?'La espera en gira sí cuenta; solo las maniobras de des/atraque no':'Cláusula: time lost vacating berth not to count as laytime'});
+  rows.push({ cls: 'row-key', evento: '🏁 Last Hook',   dt: lhVal, hrs: '→ fin op.',    obs: '' });
+  rows.push({ cls: 'row-total', evento: 'TIEMPO USADO (neto)',   dt: '—', hrs: formatHoras(tiempoUsadoHrs), obs: '' });
+  rows.push({ cls: 'row-total', evento: 'LAYTIME PERMITIDO',    dt: '—', hrs: formatHoras(laytimeAllowedHrs),
+    obs: `${ton.toLocaleString()} T ÷ ${puerto.tasa.toLocaleString()} T/día` });
+
+  document.getElementById(`lt_${pid}_tbody`).innerHTML = rows.map(r => `
+    <tr class="${r.cls}">
+      <td>${r.evento}</td>
+      <td class="mono" style="font-size:11px">${r.dt && r.dt !== '-' ? formatDtShort(new Date(r.dt)) : '—'}</td>
+      <td class="mono">${r.hrs}</td>
+      <td style="color:var(--text2);font-size:11px">${r.obs}</td>
+    </tr>`).join('');
+
+  // Resultado bar
+  const resbar = document.getElementById(`lt_${pid}_resbar`);
+  resbar.className = `lt-result-bar ${tipo_res}`;
+  const labels = { dem: '⚠️ DEMURRAGE', desp: '✅ DESPATCH', even: '⚖️ EVEN' };
+  const subs = {
+    dem:  `Excedió laytime en ${formatHoras(Math.abs(balance))}`,
+    desp: `Terminó ${formatHoras(balance)} antes — despatch al 50%`,
+    even: 'Tiempo exactamente igual al laytime permitido',
+  };
+  document.getElementById(`lt_${pid}_reslabel`).textContent  = labels[tipo_res];
+  document.getElementById(`lt_${pid}_ressub`).textContent    = subs[tipo_res];
+  document.getElementById(`lt_${pid}_allowed`).textContent   = formatHoras(laytimeAllowedHrs);
+  document.getElementById(`lt_${pid}_used`).textContent      = formatHoras(tiempoUsadoHrs);
+  document.getElementById(`lt_${pid}_resmonto`).textContent  =
+    tipo_res === 'even' ? 'USD 0' :
+    `${tipo_res === 'dem' ? '− ' : '+ '}USD ${Math.round(monto).toLocaleString('es-CL')}`;
+
+  document.getElementById(`lt_${pid}_resultado`).style.display = 'block';
+  ltActualizarResumen();
+}
+
+// ── SHEX: calcular horas Sáb 12:00 – Lun 06:00 dentro de un rango ──────
+function ltCalcularSHEX(desde, hasta) {
+  let excluidas = 0;
+  let cur = new Date(desde);
+  while (cur < hasta) {
+    const fin = new Date(Math.min(cur.getTime() + 3600000, hasta.getTime()));
+    const dow = cur.getDay();
+    const h   = cur.getHours();
+    // Sábado ≥ 12:00 o domingo o lunes < 06:00
+    const enShex = (dow === 6 && h >= 12) || dow === 0 || (dow === 1 && h < 6);
+    if (enShex) excluidas += (fin - cur) / 3600000;
+    cur = fin;
+  }
+  return excluidas;
+}
+
+// ── RESUMEN TOTAL VIAJE ──────────────────────────────────────────────────
+function ltActualizarResumen() {
+  const clienteKey = document.getElementById('ltCargaTipo').value;
+  const cfg = LT_CLIENTES_CONFIG[clienteKey];
+  if (!cfg) return;
+  const puertos = cfg.puertos;
+  if (Object.keys(ltResultados).length < puertos.length) {
+    document.getElementById('ltResumenViaje').style.display = 'none';
+    return;
+  }
+
+  let totalDem = 0, totalDesp = 0;
+  let html = `<table class="lt-resumen-table">
+    <thead><tr>
+      <th>Puerto</th><th>Tipo</th><th>Laytime</th><th>Usado</th><th>Balance</th><th>Resultado</th><th>USD</th>
+    </tr></thead><tbody>`;
+
+  puertos.forEach(p => {
+    const r = ltResultados[p.id];
+    if (!r) return;
+    const bc = r.tipo_res === 'dem' ? 'var(--red)' : r.tipo_res === 'desp' ? 'var(--green)' : 'var(--gold)';
+    const label = r.tipo_res === 'dem' ? 'DEMURRAGE' : r.tipo_res === 'desp' ? 'DESPATCH' : 'EVEN';
+    const usd = r.tipo_res === 'even' ? '0' :
+      `${r.tipo_res === 'dem' ? '−' : '+'}${Math.round(r.monto).toLocaleString('es-CL')}`;
+    if (r.tipo_res === 'dem') totalDem += r.monto;
+    if (r.tipo_res === 'desp') totalDesp += r.monto;
+    html += `<tr>
+      <td style="font-weight:700">${r.puerto}</td>
+      <td style="font-size:11px;text-transform:uppercase;color:var(--text2)">${r.tipo}</td>
+      <td class="mono">${formatHoras(r.laytimeAllowedHrs)}</td>
+      <td class="mono">${formatHoras(r.tiempoUsadoHrs)}</td>
+      <td class="mono">${(r.balance >= 0 ? '+' : '') + formatHoras(r.balance)}</td>
+      <td><span class="badge ${r.tipo_res === 'dem' ? 'dem' : r.tipo_res === 'desp' ? 'desp' : 'even'}">${label}</span></td>
+      <td class="mono" style="font-weight:700;color:${bc}">${usd}</td>
+    </tr>`;
+  });
+  html += '</tbody></table>';
+
+  document.getElementById('ltResumenTabla').innerHTML = html;
+  const neto = totalDem - totalDesp;
+  document.getElementById('ltTotalDem').textContent  = `USD ${Math.round(totalDem).toLocaleString('es-CL')}`;
+  document.getElementById('ltTotalDesp').textContent = `USD ${Math.round(totalDesp).toLocaleString('es-CL')}`;
+  const netoEl = document.getElementById('ltBalanceNeto');
+  netoEl.textContent = `${neto >= 0 ? '− ' : '+ '}USD ${Math.round(Math.abs(neto)).toLocaleString('es-CL')}`;
+  netoEl.style.color = neto > 0 ? 'var(--red)' : neto < 0 ? 'var(--green)' : 'var(--gold)';
+  document.getElementById('ltResumenViaje').style.display = 'block';
+}
+
+function ltGuardarResumen() {
+  const tipoCarga = document.getElementById('ltCargaTipo').value;
+  const rec = {
+    id: genId(), fecha: new Date().toISOString(), tipo: 'laytime_sof',
+    tipoCarga, nave: document.getElementById('ltNave').value || '—',
+    resultados: { ...ltResultados },
+  };
+  const hist = JSON.parse(localStorage.getItem(LS_HISTORIAL) || '[]');
+  hist.unshift(rec);
+  localStorage.setItem(LS_HISTORIAL, JSON.stringify(hist));
+  alert('✅ SOF guardado en historial');
+}
+
+// ═══════════════════════════════════════════════
+// DETENTION — LÓGICA
+// ═══════════════════════════════════════════════
+let selectedScenario = null;
+let currentDetCalc = null;
+
+function renderDetentionForm() {
+  const cliente = document.getElementById('detCliente').value;
+  const tipoPuerto = document.getElementById('detTipoPuerto').value;
+
+  document.getElementById('detScenarioTitle').textContent = `Escenario de Arribo — ${cliente}`;
+  // Actualizar label tonelaje cliente
+  const lbl = document.getElementById('detTonClienteLabel');
+  if(lbl) lbl.textContent = `Tonelaje ${cliente} en este puerto (T)`;
+  // Mostrar nave + viaje en título de la card
+  const nave = document.getElementById('detNave')?.value||'';
+  const viaje = document.getElementById('detViaje')?.value||'';
+  const puerto = document.getElementById('detPuerto')?.value||'';
+  const tituloCard = document.querySelector('#panel-detention .section-title');
+  if(tituloCard) tituloCard.innerHTML = `Configuración Detention${nave?' — <span style="color:var(--accent)">' + nave + '</span>':''}${viaje?' · Voyage '+viaje:''}${puerto?' · '+puerto:''}`;
+
+  // Horas libres según cliente y puerto
+  const horasMap = {
+    BHP:        { origen: 48,  destino: 0,  rateOrigen: 18000, rateDestino: 0     },
+    Codelco:    { origen: 24,  destino: 24, rateOrigen: 18000, rateDestino: 18000 },
+    Candelaria: { origen: 12,  destino: 0,  rateOrigen: 20000, rateDestino: 0     },
+    KMP:        { origen: 12,  destino: 0,  rateOrigen: 25000, rateDestino: 0     },
+    Trafigura:  { origen: 0,   destino: 0,  rateOrigen: 19000, rateDestino: 19000 },
+  };
+  const cfg = horasMap[cliente] || horasMap['Codelco'];
+  const hl = cfg[tipoPuerto === 'origen' ? 'origen' : 'destino'];
+  // Actualizar tasa detention según cliente
+  const rateKey = tipoPuerto === 'origen' ? 'rateOrigen' : 'rateDestino';
+  document.getElementById('detRate').value = cfg[rateKey] || 18000;
+  document.getElementById('detHorasLibres').value = hl;
+  const notasDet = {
+    BHP: 'LP: Swell 50% · Anchorage to All Fast',
+    Codelco: 'POB to All Fast · Swell al arribo 50%',
+    Candelaria: 'Mal tiempo no cuenta · Strike 50% después de 48h',
+    KMP: 'Lluvia no cuenta · Huelgas excluidas',
+    Trafigura: 'Mal tiempo no cuenta · Huelgas excluidas',
+  };
+  document.getElementById('detHorasHint').textContent = `${cliente} ${tipoPuerto === 'origen' ? 'Origen' : 'Destino'}: ${hl}h de gracia · ${notasDet[cliente]||''}`;
+
+  // Mostrar escenarios genéricos para clientes sin escenarios específicos
+  document.getElementById('scenariosBHP').style.display = cliente === 'BHP' ? 'block' : 'none';
+  document.getElementById('scenariosCodelco').style.display = cliente === 'Codelco' ? 'block' : 'none';
+  document.getElementById('scenariosGenerico').style.display = (cliente !== 'BHP' && cliente !== 'Codelco') ? 'block' : 'none';
+
+  // Pro rata solo aplica en escenarios BHP específicos
+  // Mostrar campo tonelaje total siempre (útil para pro rata)
+  selectedScenario = null;
+  clearScenarioSelection();
+  document.getElementById('detResultBox').style.display = 'none';
+  calcularDetention();
+}
+
+function selScenario(id) {
+  selectedScenario = id;
+  clearScenarioSelection();
+  const el = document.getElementById('sc-' + id);
+  if (el) el.classList.add('selected');
+
+  // Mostrar/ocultar campos extra BHP escenario A
+  const bhp1w = document.getElementById('bhp1-weather-hrs');
+  if (bhp1w) {
+    const rad = document.querySelector('input[name="bhp1w"]:checked');
+    bhp1w.style.display = (id === 'bhp-1' && rad && rad.value === 'si') ? 'block' : 'none';
+  }
+
+  // Mostrar/ocultar campo clima Codelco
+  const cdlcWB = document.getElementById('codelco-weather-block');
+  if (cdlcWB) cdlcWB.style.display = id === 'cdlc-2' ? 'block' : 'none';
+
+  calcularDetention();
+}
+
+function clearScenarioSelection() {
+  document.querySelectorAll('.scenario-card').forEach(c => c.classList.remove('selected'));
+}
+
+// Listener para radio BHP escenario A clima
+document.addEventListener('change', e => {
+  if (e.target.name === 'bhp1w') {
+    const hrs = document.getElementById('bhp1-weather-hrs');
+    if (hrs) hrs.style.display = e.target.value === 'si' ? 'block' : 'none';
+    calcularDetention();
+  }
+});
+
+function calcularDetention() {
+  if (!selectedScenario) { document.getElementById('detResultBox').style.display = 'none'; return; }
+
+  const cliente = document.getElementById('detCliente').value;
+  const tipoPuerto = document.getElementById('detTipoPuerto').value;
+  const arriboVal = document.getElementById('detArribo').value;
+  const allFastVal = document.getElementById('detAllFast').value;
+  const rate = parseFloat(document.getElementById('detRate').value) || 18000;
+  const horasLibres = parseFloat(document.getElementById('detHorasLibres').value) || 0;
+  const tonCliente = parseFloat(document.getElementById('detTonCliente').value) || 0;
+  const tonTotal = parseFloat(document.getElementById('detTonTotal').value) || tonCliente;
+
+  if (!arriboVal || !allFastVal) { document.getElementById('detResultBox').style.display = 'none'; return; }
+
+  const arriboDt = new Date(arriboVal);
+  const allFastDt = new Date(allFastVal);
+
+  // Total horas desde arribo hasta All Fast
+  const totalHorasEspera = Math.max(0, (allFastDt - arriboDt) / 3600000);
+
+  // Horas de espera DESPUÉS del grace period
+  const horasDetention = Math.max(0, totalHorasEspera - horasLibres);
+
+  // Pro rata ratio
+  const proRata = tonTotal > 0 ? tonCliente / tonTotal : 1;
+
+  let montoTotal = 0;
+  let detalle = '';
+  let titulo = '';
+  let subtitulo = '';
+  let noPaga = false;
+
+  const rateHora = rate / 24;
+  const rateMitadHora = rate / 2 / 24;
+
+  if (cliente === 'BHP') {
+    switch (selectedScenario) {
+      case 'bhp-1': {
+        // Congestionado: tasa completa pro rata
+        // Si después cierra por clima: esas horas al 50% pro rata
+        const radClima = document.querySelector('input[name="bhp1w"]:checked');
+        const hayClima = radClima && radClima.value === 'si';
+        const hrsClima = hayClima ? (parseFloat(document.getElementById('bhp1WeatherHrs').value) || 0) : 0;
+        const hrsCongest = Math.max(0, horasDetention - hrsClima);
+
+        const montoCongest = hrsCongest * rateHora * proRata;
+        const montoClima = hrsClima * rateMitadHora * proRata;
+        montoTotal = montoCongest + montoClima;
+
+        titulo = '⚠️ DETENTION — Puerto Congestionado';
+        subtitulo = `Escenario A · BHP · ${tipoPuerto === 'origen' ? 'Origen' : 'Destino'}`;
+        detalle = `
+          <div class="resultado-item"><label>Horas espera total</label><span>${formatHoras(totalHorasEspera)}</span></div>
+          <div class="resultado-item"><label>Grace period</label><span>${horasLibres}h</span></div>
+          <div class="resultado-item"><label>Horas detention</label><span>${formatHoras(horasDetention)}</span></div>
+          <div class="resultado-item"><label>Congestión (100%)</label><span>${formatHoras(hrsCongest)}</span></div>
+          <div class="resultado-item"><label>Cierre clima (50%)</label><span>${formatHoras(hrsClima)}</span></div>
+          <div class="resultado-item"><label>Pro rata BHP</label><span>${(proRata * 100).toFixed(1)}%</span></div>`;
+        break;
+      }
+      case 'bhp-2': {
+        // Cerrado por clima: 50% pro rata
+        montoTotal = horasDetention * rateMitadHora * proRata;
+        titulo = '🌊 DETENTION — Puerto Cerrado (Clima)';
+        subtitulo = `Escenario B · BHP · Tasa 50% · ${tipoPuerto === 'origen' ? 'Origen' : 'Destino'}`;
+        detalle = `
+          <div class="resultado-item"><label>Horas espera total</label><span>${formatHoras(totalHorasEspera)}</span></div>
+          <div class="resultado-item"><label>Grace period</label><span>${horasLibres}h</span></div>
+          <div class="resultado-item"><label>Horas detention</label><span>${formatHoras(horasDetention)}</span></div>
+          <div class="resultado-item"><label>Tasa aplicada</label><span>50% de USD ${rate.toLocaleString()}</span></div>
+          <div class="resultado-item"><label>Pro rata BHP</label><span>${(proRata * 100).toFixed(1)}%</span></div>`;
+        break;
+      }
+      case 'bhp-3': {
+        // Solo BHP no listo: 100% sin pro rata
+        montoTotal = horasDetention * rateHora;
+        titulo = '⚠️ DETENTION — Carga BHP No Lista';
+        subtitulo = 'Escenario C · BHP · Tasa completa 100%';
+        detalle = `
+          <div class="resultado-item"><label>Horas espera total</label><span>${formatHoras(totalHorasEspera)}</span></div>
+          <div class="resultado-item"><label>Grace period</label><span>${horasLibres}h</span></div>
+          <div class="resultado-item"><label>Horas detention</label><span>${formatHoras(horasDetention)}</span></div>
+          <div class="resultado-item"><label>Tasa aplicada</label><span>100% USD ${rate.toLocaleString()}/día</span></div>`;
+        break;
+      }
+      case 'bhp-4': {
+        // Solo no-BHP no listo: BHP NO paga
+        noPaga = true;
+        montoTotal = 0;
+        titulo = '✅ SIN DETENTION — Carga No-BHP No Lista';
+        subtitulo = 'Escenario D · BHP no paga detention en este caso';
+        detalle = `
+          <div class="resultado-item"><label>Horas espera total</label><span>${formatHoras(totalHorasEspera)}</span></div>
+          <div class="resultado-item"><label>Motivo</label><span>Solo carga no-BHP no lista</span></div>
+          <div class="resultado-item"><label>BHP Paga</label><span style="color:var(--green)">NO</span></div>`;
+        break;
+      }
+      case 'bhp-5': {
+        // BHP y no-BHP no listos: pro rata
+        montoTotal = horasDetention * rateHora * proRata;
+        titulo = '⚠️ DETENTION — BHP + No-BHP No Listos';
+        subtitulo = `Escenario E · BHP · Pro rata entre responsables`;
+        detalle = `
+          <div class="resultado-item"><label>Horas espera total</label><span>${formatHoras(totalHorasEspera)}</span></div>
+          <div class="resultado-item"><label>Grace period</label><span>${horasLibres}h</span></div>
+          <div class="resultado-item"><label>Horas detention</label><span>${formatHoras(horasDetention)}</span></div>
+          <div class="resultado-item"><label>Pro rata BHP</label><span>${(proRata * 100).toFixed(1)}%</span></div>`;
+        break;
+      }
+    }
+  } else {
+    // CODELCO
+    switch (selectedScenario) {
+      case 'cdlc-1': {
+        // Congestión o carga no lista: 100% después de 24h
+        montoTotal = horasDetention * rateHora;
+        titulo = '⚠️ DETENTION — Congestión / Carga No Lista';
+        subtitulo = 'Escenario A · Codelco · Tasa completa';
+        detalle = `
+          <div class="resultado-item"><label>Horas espera total</label><span>${formatHoras(totalHorasEspera)}</span></div>
+          <div class="resultado-item"><label>Grace period</label><span>24h</span></div>
+          <div class="resultado-item"><label>Horas detention</label><span>${formatHoras(horasDetention)}</span></div>
+          <div class="resultado-item"><label>Tasa aplicada</label><span>100% USD ${rate.toLocaleString()}/día</span></div>`;
+        break;
+      }
+      case 'cdlc-2': {
+        // Puerto cerrado clima: 50% después de 24h
+        const hrsClima = parseFloat(document.getElementById('cdlcWeatherHrs').value) || 0;
+        const hrsSinClima = Math.max(0, horasDetention - hrsClima);
+        montoTotal = (hrsSinClima * rateHora) + (hrsClima * rateMitadHora);
+        // Si todo fue clima, solo 50%
+        if (hrsSinClima === 0) montoTotal = horasDetention * rateMitadHora;
+        titulo = '🌊 DETENTION — Puerto Cerrado (Clima)';
+        subtitulo = 'Escenario B · Codelco · Tasa 50%';
+        detalle = `
+          <div class="resultado-item"><label>Horas espera total</label><span>${formatHoras(totalHorasEspera)}</span></div>
+          <div class="resultado-item"><label>Grace period</label><span>24h</span></div>
+          <div class="resultado-item"><label>Horas detention</label><span>${formatHoras(horasDetention)}</span></div>
+          <div class="resultado-item"><label>Tasa aplicada</label><span>50% USD ${rate.toLocaleString()}/día</span></div>`;
+        break;
+      }
+      case 'cdlc-3': {
+        // Congestión → luego clima: tasa COMPLETA todo el periodo
+        montoTotal = horasDetention * rateHora;
+        titulo = '🔴 DETENTION — Congestión + Cierre Clima';
+        subtitulo = 'Escenario C · Codelco · Tasa completa incluso durante cierre climático';
+        detalle = `
+          <div class="resultado-item"><label>Horas espera total</label><span>${formatHoras(totalHorasEspera)}</span></div>
+          <div class="resultado-item"><label>Grace period</label><span>24h</span></div>
+          <div class="resultado-item"><label>Horas detention</label><span>${formatHoras(horasDetention)}</span></div>
+          <div class="resultado-item"><label>Tasa aplicada</label><span>100% todo el periodo</span></div>`;
+        break;
+      }
+    }
+  }
+
+  // Mostrar resultado
+  const box = document.getElementById('detResultBox');
+  box.style.display = 'block';
+  box.className = 'resultado-box ' + (noPaga ? 'despatch' : montoTotal > 0 ? 'demurrage' : 'even');
+  const _dNave = document.getElementById('detNave')?.value||'';
+  const _dViaje = document.getElementById('detViaje')?.value||'';
+  const _dPuerto = document.getElementById('detPuerto')?.value||'';
+  const _dCtx = [_dNave, _dViaje?'V.'+_dViaje:'', _dPuerto].filter(Boolean).join(' · ');
+  document.getElementById('detResTitulo').textContent = titulo + (_dCtx?' — '+_dCtx:'');
+  document.getElementById('detResSubtitulo').textContent = subtitulo;
+  document.getElementById('detResMonto').textContent = noPaga ? 'USD 0' :
+    `USD ${Math.round(montoTotal).toLocaleString('es-CL')}`;
+  document.getElementById('detResDetalle').innerHTML = detalle;
+
+  currentDetCalc = {
+    id: genId(), fecha: new Date().toISOString(), tipo: 'detention',
+    cliente, tipoPuerto, scenario: selectedScenario,
+    arriboVal, allFastVal, horasLibres, totalHorasEspera, horasDetention,
+    rate, proRata, montoTotal, noPaga, titulo
+  };
+
+  box.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+function guardarDetention() {
+  if (!currentDetCalc) return;
+  const hist = JSON.parse(localStorage.getItem(LS_HISTORIAL) || '[]');
+  hist.unshift(currentDetCalc);
+  localStorage.setItem(LS_HISTORIAL, JSON.stringify(hist));
+  mostrarToast('GUARDADO');
+}
+
+// ═══════════════════════════════════════════════
+// UTILS
+// ═══════════════════════════════════════════════
+function genId() { return Math.random().toString(36).substr(2,9); }
+
+function formatHoras(h) {
+  const abs = Math.abs(h);
+  let hh = Math.floor(abs);
+  let mm = Math.round((abs - hh) * 60);
+  if(mm === 60) { hh += 1; mm = 0; }
+  return `${hh}h ${mm.toString().padStart(2,'0')}m`;
+}
+
+function formatHM(dt) {
+  return dt.toLocaleTimeString('es-CL', { hour: '2-digit', minute: '2-digit' });
+}
+
+function formatDtShort(dt) {
+  if (!dt || isNaN(dt)) return '-';
+  return dt.toLocaleDateString('es-CL', { day: '2-digit', month: '2-digit' }) + ' ' +
+    dt.toLocaleTimeString('es-CL', { hour: '2-digit', minute: '2-digit' });
+}
+
+function formatDtLocal(str) {
+  // convierte "2026-04-26 08:00" o "2026-04-26T08:00" a datetime-local
+  return str.replace(' ', 'T').slice(0,16);
+}
+
+function toDatetimeLocal(dt) {
+  const pad = n => String(n).padStart(2,'0');
+  return `${dt.getFullYear()}-${pad(dt.getMonth()+1)}-${pad(dt.getDate())}T${pad(dt.getHours())}:${pad(dt.getMinutes())}`;
+}
+</script>
+</body>
+</html>
