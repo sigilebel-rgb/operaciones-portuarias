@@ -374,6 +374,7 @@
   to   { opacity:1; transform:scale(1); }
 }
 </style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 </head>
 <body>
 <div id="saveToast">
@@ -403,6 +404,7 @@
     <button class="tab active" onclick="setTab('calcular')">📊 Demurrage</button>
     <button class="tab" onclick="setTab('laytime')">📋 Laytime / SOF</button>
     <button class="tab" onclick="setTab('detention')">⏱ Detention</button>
+    <button class="tab" onclick="setTab('gira')">🔄 Gira</button>
     <button class="tab" onclick="setTab('clientes')">🏢 Clientes</button>
     <button class="tab" onclick="setTab('contratos')">📝 Contratos</button>
     <button class="tab" onclick="setTab('historial')">🗂 Historial</button>
@@ -1043,6 +1045,73 @@
 
   </div><!-- /panel-detention -->
 
+  <!-- ══════════════════════════════════ TAB: GIRA (Mejillones) ══════════════════════════════════ -->
+  <div id="panel-gira" class="panel">
+    <div class="card">
+      <div class="section-title">Prorrateo de espera por gira — Mejillones</div>
+      <p style="font-size:13px;color:var(--text2);margin:0 0 14px">Cuando la nave es sacada a la gira por prioridad de otra recalada, la espera generada se cobra a los clientes de esa recalada, proporcional a su tonelaje.</p>
+
+      <div class="form-grid cols3">
+        <div class="field">
+          <label>Valor día nave (USD)</label>
+          <input type="number" id="giraValorDia" value="30000" step="1000" oninput="giraCalcular()">
+        </div>
+        <div class="field">
+          <label>Tasa por hora (USD/h)</label>
+          <input type="number" id="giraTasaHora" step="10" oninput="giraTasaManual()" placeholder="auto">
+        </div>
+        <div class="field">
+          <label>Referencia / Nave · Viaje</label>
+          <input type="text" id="giraRef" placeholder="Ej: Cóndor Valparaíso v2607">
+        </div>
+      </div>
+
+      <div class="form-grid cols3" style="margin-top:4px">
+        <div class="field">
+          <label>Desatraque (salida a la gira)</label>
+          <input type="datetime-local" id="giraSalida" oninput="giraCalcular()">
+        </div>
+        <div class="field">
+          <label>Reatraque (regreso)</label>
+          <input type="datetime-local" id="giraRegreso" oninput="giraCalcular()">
+        </div>
+        <div class="field">
+          <label>Horas de gira</label>
+          <input type="number" id="giraHoras" step="0.5" oninput="giraHorasManual()" placeholder="auto desde fechas">
+        </div>
+      </div>
+
+      <div style="background:var(--navy2);border:1px solid var(--border);border-radius:10px;padding:12px 14px;margin-top:12px;display:flex;flex-wrap:wrap;gap:20px;align-items:center">
+        <div><span style="font-size:11px;color:var(--text2);display:block">Horas de gira</span><b id="giraOutHoras" style="font-size:18px">—</b></div>
+        <div><span style="font-size:11px;color:var(--text2);display:block">Tasa aplicada</span><b id="giraOutTasa" style="font-size:18px">—</b></div>
+        <div><span style="font-size:11px;color:var(--text2);display:block">Monto total espera</span><b id="giraOutMonto" style="font-size:20px;color:var(--accent)">—</b></div>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:16px">
+      <div class="section-title">Clientes de la recalada</div>
+      <p style="font-size:12px;color:var(--text2);margin:0 0 10px">Ingresa cada cliente con su tonelaje, o pega/carga el Main File para autodetectar. El reparto se recalcula solo.</p>
+      <div class="form-grid cols3" style="margin-bottom:10px">
+        <div class="field"><label>Cliente</label><input type="text" id="giraCli" placeholder="Ej: CODELCO"></div>
+        <div class="field"><label>Tonelaje (t)</label><input type="number" id="giraTon" step="1" placeholder="Ej: 4000"></div>
+        <div class="field" style="align-self:end"><button class="btn-secondary" onclick="giraAddCliente()">+ Agregar cliente</button></div>
+      </div>
+      <div style="overflow-x:auto">
+        <table class="hist-table" id="giraTabla">
+          <thead><tr><th>Cliente</th><th style="text-align:right">Tonelaje (t)</th><th style="text-align:right">%</th><th style="text-align:right">A pagar (USD)</th><th></th></tr></thead>
+          <tbody id="giraTbody"><tr><td colspan="5" style="text-align:center;color:var(--text2);padding:18px">Sin clientes cargados</td></tr></tbody>
+          <tfoot><tr style="font-weight:700;border-top:2px solid var(--border)"><td>TOTAL</td><td style="text-align:right" id="giraFootTon">—</td><td style="text-align:right">100%</td><td style="text-align:right" id="giraFootMonto">—</td><td></td></tr></tfoot>
+        </table>
+      </div>
+      <div style="display:flex;gap:8px;margin-top:14px;flex-wrap:wrap">
+        <button class="btn-secondary" onclick="giraCargarMainFile()">📄 Cargar Main File (.xlsx)</button>
+        <input type="file" id="giraFile" accept=".xlsx,.xls" style="display:none" onchange="giraLeerMainFile(event)">
+        <button class="btn-secondary" onclick="giraLimpiar()">↺ Limpiar</button>
+      </div>
+    </div>
+  </div>
+
+
 </div><!-- /container -->
 
 <!-- MODAL CLIENTE -->
@@ -1358,6 +1427,7 @@ function setTab(tab) {
   if (tab === 'historial') renderHistorial();
   if (tab === 'clientes') renderClientesGrid();
   if (tab === 'contratos') renderContratosEditor();
+  if (tab === 'gira') giraCalcular();
   if (tab === 'detention') {
     renderDetentionForm();
     // Auto-poblar desde escala seleccionada
@@ -3727,6 +3797,141 @@ function toDatetimeLocal(dt) {
   const pad = n => String(n).padStart(2,'0');
   return `${dt.getFullYear()}-${pad(dt.getMonth()+1)}-${pad(dt.getDate())}T${pad(dt.getHours())}:${pad(dt.getMinutes())}`;
 }
+
+// ═══════════════════════════════════════════════
+// GIRA — Prorrateo de espera (Mejillones)
+// Nave sacada a la gira por prioridad → espera valorizada al día-nave, prorrateada por tonelaje.
+// ═══════════════════════════════════════════════
+let giraClientes = [];          // [{cliente, ton}]
+let giraTasaEditada = false;    // true si el usuario fijó la tasa/h a mano
+let giraHorasEditada = false;   // true si el usuario fijó las horas a mano
+
+function giraTasaActual() {
+  if (giraTasaEditada) {
+    const t = parseFloat(document.getElementById('giraTasaHora').value);
+    if (!isNaN(t) && t > 0) return t;
+  }
+  const vd = parseFloat(document.getElementById('giraValorDia').value) || 0;
+  return vd / 24;
+}
+function giraHorasActual() {
+  if (giraHorasEditada) {
+    const h = parseFloat(document.getElementById('giraHoras').value);
+    if (!isNaN(h) && h >= 0) return h;
+  }
+  const s = document.getElementById('giraSalida').value;
+  const r = document.getElementById('giraRegreso').value;
+  if (s && r) {
+    const ms = new Date(r) - new Date(s);
+    if (ms > 0) return ms / 3600000;
+  }
+  return 0;
+}
+function giraTasaManual() { giraTasaEditada = (document.getElementById('giraTasaHora').value.trim() !== ''); giraCalcular(); }
+function giraHorasManual() { giraHorasEditada = (document.getElementById('giraHoras').value.trim() !== ''); giraCalcular(); }
+
+function giraAddCliente() {
+  const cli = document.getElementById('giraCli').value.trim();
+  const ton = parseFloat(document.getElementById('giraTon').value) || 0;
+  if (!cli) { document.getElementById('giraCli').focus(); return; }
+  const ex = giraClientes.find(c => c.cliente.toUpperCase() === cli.toUpperCase());
+  if (ex) ex.ton += ton; else giraClientes.push({ cliente: cli, ton: ton });
+  document.getElementById('giraCli').value = '';
+  document.getElementById('giraTon').value = '';
+  document.getElementById('giraCli').focus();
+  giraCalcular();
+}
+function giraDelCliente(i) { giraClientes.splice(i, 1); giraCalcular(); }
+function giraEditTon(i, v) { giraClientes[i].ton = parseFloat(v) || 0; giraCalcular(); }
+function giraLimpiar() { giraClientes = []; giraCalcular(); }
+
+function giraCalcular() {
+  const tasa = giraTasaActual();
+  const horas = giraHorasActual();
+  const monto = tasa * horas;
+  // auto-mostrar tasa/horas calculadas en sus campos cuando no fueron editadas a mano
+  if (!giraTasaEditada) document.getElementById('giraTasaHora').placeholder = tasa ? tasa.toFixed(0) : 'auto';
+  if (!giraHorasEditada) document.getElementById('giraHoras').placeholder = horas ? horas.toFixed(1) : 'auto desde fechas';
+
+  document.getElementById('giraOutHoras').textContent = horas ? horas.toFixed(1) + ' h' : '—';
+  document.getElementById('giraOutTasa').textContent = tasa ? 'USD ' + tasa.toLocaleString('en-US', {maximumFractionDigits:0}) + '/h' : '—';
+  document.getElementById('giraOutMonto').textContent = monto ? 'USD ' + monto.toLocaleString('en-US', {maximumFractionDigits:0}) : '—';
+
+  const totTon = giraClientes.reduce((s, c) => s + (c.ton || 0), 0);
+  const tb = document.getElementById('giraTbody');
+  if (!giraClientes.length) {
+    tb.innerHTML = '<tr><td colspan="5" style="text-align:center;color:var(--text2);padding:18px">Sin clientes cargados</td></tr>';
+  } else {
+    tb.innerHTML = giraClientes.map((c, i) => {
+      const pct = totTon > 0 ? (c.ton / totTon) : 0;
+      const pago = monto * pct;
+      return '<tr>'
+        + '<td>' + c.cliente + '</td>'
+        + '<td style="text-align:right"><input type="number" value="' + (c.ton || 0) + '" step="1" style="width:100px;text-align:right;background:transparent;border:1px solid var(--border);border-radius:6px;padding:3px 6px;color:inherit" onchange="giraEditTon(' + i + ',this.value)"></td>'
+        + '<td style="text-align:right">' + (pct * 100).toFixed(1) + '%</td>'
+        + '<td style="text-align:right;font-weight:700">' + (monto ? 'USD ' + pago.toLocaleString('en-US', {maximumFractionDigits:0}) : '—') + '</td>'
+        + '<td style="text-align:center"><button onclick="giraDelCliente(' + i + ')" style="background:none;border:none;color:var(--text2);cursor:pointer;font-size:15px">✕</button></td>'
+        + '</tr>';
+    }).join('');
+  }
+  document.getElementById('giraFootTon').textContent = totTon ? totTon.toLocaleString('es-CL') + ' t' : '—';
+  document.getElementById('giraFootMonto').textContent = monto ? 'USD ' + monto.toLocaleString('en-US', {maximumFractionDigits:0}) : '—';
+}
+
+// ── Autodetección desde Main File (hoja Bookings, columnas Customer + Commodity/Tons) ──
+function giraCargarMainFile() { document.getElementById('giraFile').click(); }
+function giraTonsFromText(txt) {
+  if (!txt) return null;
+  const m = String(txt).match(/([\d\.,]+)\s*(?:mt|tons?|tns|MT|TONS?)\b/i);
+  if (!m) return null;
+  let x = m[1];
+  // formato con coma decimal (103,989) o miles con punto
+  if (x.indexOf(',') > -1 && x.indexOf('.') > -1) x = x.replace(/\./g, '').replace(',', '.');
+  else if (x.indexOf(',') > -1) x = x.replace(',', '.');
+  const v = parseFloat(x);
+  return isNaN(v) ? null : v;
+}
+function giraLeerMainFile(ev) {
+  const f = ev.target.files[0];
+  if (!f) return;
+  const rd = new FileReader();
+  rd.onload = function(e) {
+    try {
+      const wb = XLSX.read(new Uint8Array(e.target.result), {type:'array'});
+      // preferir hoja "Bookings"
+      let sh = wb.SheetNames.find(n => /booking/i.test(n)) || wb.SheetNames[0];
+      const rows = XLSX.utils.sheet_to_json(wb.Sheets[sh], {header:1, defval:''});
+      // localizar fila de encabezado (contiene "Customer")
+      let hIdx = rows.findIndex(r => r.some(c => /customer/i.test(String(c))));
+      if (hIdx < 0) hIdx = 0;
+      const hdr = rows[hIdx].map(c => String(c).toLowerCase());
+      const iCust = hdr.findIndex(h => h.includes('customer'));
+      const iComm = hdr.findIndex(h => h.includes('commodity') || h.includes('tons') || h.includes('ton'));
+      const acc = {};
+      for (let k = hIdx + 1; k < rows.length; k++) {
+        const cust = String(rows[k][iCust] || '').trim();
+        if (!cust) continue;
+        const ton = giraTonsFromText(rows[k][iComm]);
+        if (ton) acc[cust.toUpperCase()] = (acc[cust.toUpperCase()] || 0) + ton;
+      }
+      const nuevos = Object.keys(acc).map(k => ({cliente: k, ton: Math.round(acc[k] * 100) / 100}));
+      if (!nuevos.length) { alert('No se detectaron clientes con tonelaje en el archivo.'); return; }
+      giraClientes = nuevos;
+      const ref = document.getElementById('giraRef');
+      if (!ref.value) {
+        const nv = rows.find(r => r.some(c => /vessel|nave/i.test(String(c))));
+        ref.value = f.name.replace(/\.[^.]+$/, '');
+      }
+      giraCalcular();
+      alert(nuevos.length + ' cliente(s) cargados con tonelaje. Revisa y ajusta lo que falte antes de prorratear.');
+    } catch (err) {
+      alert('No se pudo leer el archivo: ' + err.message);
+    }
+    ev.target.value = '';
+  };
+  rd.readAsArrayBuffer(f);
+}
+
 </script>
 </body>
 </html>
