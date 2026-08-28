@@ -82,6 +82,7 @@ input[type=time]{color:var(--text)}
 .t-am{background:var(--yellow-dim);color:var(--yellow)}
 .t-re{background:var(--red-dim);color:var(--red)}
 .t-pu{background:var(--purple-dim);color:var(--purple)}
+.t-or{background:rgba(217,83,30,.15);color:#D9531E}
 .t-gy{background:var(--bg4);color:var(--text2)}
 
 /* ─── ALERTAS ─── */
@@ -318,6 +319,8 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
           <select id="mm-tipo">
             <option value="Embarque">🟢 Embarque</option>
             <option value="Descarga">🔵 Descarga</option>
+            <option value="Movilización a bordo">🟠 Movilización a bordo</option>
+            <option value="Movilización a muelle">🟣 Movilización a muelle</option>
           </select>
         </div>
         <div class="fgrp"><label>Producto</label>
@@ -332,16 +335,8 @@ var o=[];var l=Array.isArray(e);for(f=n.s.c;f<=n.e.c;++f)s[f]=ya(f);for(var c=n.
           <input id="mm-bodega" placeholder="Ej: 1, 2, 3">
         </div>
         <div class="fgrp"><label>Cliente / Contrato</label>
-          <select id="mm-cliente">
+          <select id="mm-cliente" onchange="window._mmClienteSeleccionado=this.value">
             <option value="">— Sin contrato —</option>
-            <option value="codelco_concentrado">Codelco — Concentrado Cobre</option>
-            <option value="codelco_catodos">Codelco — Catodos Cobre</option>
-            <option value="bhp_concentrado">BHP — Concentrado</option>
-            <option value="bhp_catodos">BHP — Cátodos Cobre</option>
-            <option value="kmp_harina">KMP — Harina Pescado</option>
-            <option value="trafigura_concentrado_cobre">Trafigura — Concentrado Cobre</option>
-            <option value="trafigura_concentrado_zinc">Trafigura — Concentrado Zinc</option>
-            <option value="candelaria_coquimbo">Candelaria — Coquimbo</option>
           </select>
         </div>
       </div>
@@ -1525,7 +1520,29 @@ function viajeToDBRow(v){
     return {id:v.id,nave_id:v.nave_id,voyage:v.voyage,ruta:v.desc||'',fecha_ini:v.salida||null,fecha_fin:null,data_json:v};
 }
 
-const PRODUCTOS=['Bobinas de acero','Planchas de acero','Rieles','Carga general','Contenedores','Cobre','Fierro construcción','Alambrón','Concentrado de cobre','Concentrado de hierro','Concentrado de zinc','Heavy Lift','Cobre cátodos','Cobre ánodos','Harina de pescado','Granel seco','Granel líquido','Ro-Ro','Refrigerada / Reefer','Otro'];
+const PRODUCTOS=['Bobinas de acero','Planchas de acero','Rieles','Carga general','Contenedores','Cobre','Fierro construcción','Alambrón','Concentrado de cobre','Concentrado de hierro','Concentrado de zinc','Heavy Lift','Cobre cátodos','Cobre ánodos','Harina de pescado','Granel seco','Granel líquido','Ro-Ro','Refrigerada / Reefer','Aspas eólicas','Otro'];
+const TIPOS_OP=['Embarque','Descarga','Movilización a bordo','Movilización a muelle'];
+// ── Catálogo de contratos/clientes (fuente única) ──────────────
+const CONTRATOS=[
+  {v:'codelco_concentrado',t:'Codelco — Concentrado Cobre'},
+  {v:'codelco_catodos',t:'Codelco — Cátodos Cobre'},
+  {v:'bhp_concentrado',t:'BHP — Concentrado'},
+  {v:'bhp_catodos',t:'BHP — Cátodos Cobre'},
+  {v:'kmp_harina',t:'KMP — Harina Pescado'},
+  {v:'trafigura_concentrado_cobre',t:'Trafigura — Concentrado Cobre'},
+  {v:'trafigura_concentrado_zinc',t:'Trafigura — Concentrado Zinc'},
+  {v:'candelaria_coquimbo',t:'Candelaria — Coquimbo'}
+];
+function contratoLabel(v){if(!v)return '';const f=CONTRATOS.find(function(c){return c.v===v;});return f?f.t:String(v).replace(/_/g,' ');}
+// Contratos disponibles para una escala: los del mix, + el de la escala, y si no hay nada, el catálogo completo
+function contratosDeEscala(esc){
+  const ops=[...new Set(((esc&&esc.operaciones)||[]).map(function(o){return o.cliente||'';}).filter(Boolean))];
+  if(esc&&esc.cliente&&!ops.includes(esc.cliente))ops.push(esc.cliente);
+  if(ops.length)return ops;
+  return CONTRATOS.map(function(c){return c.v;});
+}
+function opcionesTipoOp(sel){return TIPOS_OP.map(function(o){return '<option '+(o===sel?'selected':'')+'>'+o+'</option>';}).join('');}
+function tagOpCls(t){return t==='Embarque'?'t-gr':t==='Descarga'?'t-bl':t==='Movilización a bordo'?'t-or':'t-pu';}
 
 // ══════════════════════════════════════════════
 // FLOTA — NAVES
@@ -1698,7 +1715,7 @@ function renderEscalasForm(){
   if(!_escTemp.length){el.innerHTML='<div class="empty" style="padding:1rem">Sin escalas — presione + Agregar escala</div>';return;}
   el.innerHTML=_escTemp.map((e,i)=>{
     const ops=(e.operaciones||[]).map((op,j)=>'<div style="display:grid;grid-template-columns:1fr 1fr 80px 70px auto;gap:5px;align-items:end;margin-bottom:4px">'
-      +'<div class="fgrp"><label>Operación</label><select onchange="_escTemp['+i+'].operaciones['+j+'].tipo_op=this.value" style="font-size:11px"><option '+(op.tipo_op==='Embarque'?'selected':'')+'>Embarque</option><option '+(op.tipo_op==='Descarga'?'selected':'')+'>Descarga</option></select></div>'
+      +'<div class="fgrp"><label>Operación</label><select onchange="_escTemp['+i+'].operaciones['+j+'].tipo_op=this.value" style="font-size:11px">'+opcionesTipoOp(op.tipo_op)+'</select></div>'
       +'<div class="fgrp"><label>Producto</label><select onchange="_escTemp['+i+'].operaciones['+j+'].producto=this.value" style="font-size:11px"><option value="">Seleccionar...</option>'
       +PRODUCTOS.map(p=>'<option value="'+p+'" '+(op.producto===p?'selected':'')+' style="background:var(--bg3)">'+p+'</option>').join('')+'</select></div>'
       +'<div class="fgrp"><label>Ton.Prog.</label><input type="number" value="'+tonProgOp(op)+'" onchange="_escTemp['+i+'].operaciones['+j+'].ton_prog=+this.value" style="font-size:12px"></div>'
@@ -1858,7 +1875,7 @@ function renderMixCargaEscala(){
     const pct=prog>0?Math.min(100,Math.round(real/prog*100)):0;
     const colPct=pct>=100?'var(--green)':pct>=50?'var(--yellow)':'var(--red)';
     html+=`<tr>
-      <td><span class="tag ${op.tipo_op==='Embarque'?'t-gr':'t-bl'}" style="font-size:10px">${op.tipo_op}</span></td>
+      <td><span class="tag ${tagOpCls(op.tipo_op)}" style="font-size:10px">${op.tipo_op}</span></td>
       <td><strong>${op.producto||'—'}</strong></td>
       <td style="color:var(--text3)">${op.bodega||'—'}</td>
       <td style="color:var(--text2)">${prog>0?prog.toLocaleString('es-CL'):'—'}</td>
@@ -2180,8 +2197,10 @@ function renderCuadrillas(){
         for(const _vv of _vvB){const _ee=(_vv.escalas||[]).find(e=>e.id===_bEscId);if(_ee){_escCuad=_ee;break;}}
       }
     }
-    const _clientesDisp=[...new Set((_escCuad&&_escCuad.operaciones||[]).map(o=>o.cliente||'').filter(Boolean))];
-    const clienteOpts=_clientesDisp.map(cl=>`<option value="${cl}" ${(c.cliente||'')===(cl)?'selected':''}>${cl}</option>`).join('');
+    const _clientesMix=[...new Set((_escCuad&&_escCuad.operaciones||[]).map(o=>o.cliente||'').filter(Boolean))];
+    const _clientesDisp=contratosDeEscala(_escCuad);
+    if(c.cliente&&!_clientesDisp.includes(c.cliente))_clientesDisp.unshift(c.cliente);
+    const clienteOpts=_clientesDisp.map(cl=>`<option value="${cl}" ${(c.cliente||'')===(cl)?'selected':''}>${contratoLabel(cl)}</option>`).join('');
     const min=diffMin(c.hora_ini,c.hora_fin);
     const rend=min>0&&c.ton>0?Math.round(c.ton/(min/60)):0;
     const rendColor=rend>0?(rend>1200?'var(--green)':rend>700?'var(--yellow)':'var(--red)'):'var(--text3)';
@@ -2197,8 +2216,7 @@ function renderCuadrillas(){
         </div>
         <div class="fgrp"><label>Operación</label>
           <select onchange="cuadrillas[${i}].tipo_op=this.value">
-            <option ${c.tipo_op==='Embarque'?'selected':''}>Embarque</option>
-            <option ${c.tipo_op==='Descarga'?'selected':''}>Descarga</option>
+            ${opcionesTipoOp(c.tipo_op)}
           </select>
         </div>
         <div class="fgrp"><label>Producto</label>
@@ -2210,8 +2228,8 @@ function renderCuadrillas(){
         <div class="fgrp"><label>Bodega</label>
           <input value="${c.bodega}" onchange="cuadrillas[${i}].bodega=this.value" placeholder="Ej: 1,2">
         </div>
-        <div class="fgrp"><label>Contrato${_clientesDisp.length>1&&!c.cliente&&c.ton>0?'<span style="color:var(--red);margin-left:4px;font-weight:700" title="Contrato requerido">⚠</span>':''}</label>
-          <select onchange="cuadrillas[${i}].cliente=this.value;renderCuadrillas()" style="${_clientesDisp.length>1&&!c.cliente&&c.ton>0?'border:1.5px solid var(--red)':''}" >
+        <div class="fgrp"><label>Contrato${_clientesMix.length>1&&!c.cliente&&c.ton>0?'<span style="color:var(--red);margin-left:4px;font-weight:700" title="Contrato requerido">⚠</span>':''}</label>
+          <select onchange="cuadrillas[${i}].cliente=this.value;renderCuadrillas()" style="${_clientesMix.length>1&&!c.cliente&&c.ton>0?'border:1.5px solid var(--red)':''}" >
             <option value="">&#8212; Todos &#8212;</option>
             ${clienteOpts}
           </select>
@@ -3457,10 +3475,12 @@ function metRenderCuadrillas(){
       for(const _vv of _vvEdit){const _ee=(_vv.escalas||[]).find(e=>e.id===_tEdit.escala_id);if(_ee){_metEscala=_ee;break;}}
     }
   }
-  const _metClientesDisp=[...new Set((_metEscala&&_metEscala.operaciones||[]).map(o=>o.cliente||'').filter(Boolean))];
+  const _metClientesMix=[...new Set((_metEscala&&_metEscala.operaciones||[]).map(o=>o.cliente||'').filter(Boolean))];
+  const _metClientesDisp=contratosDeEscala(_metEscala);
   el.innerHTML=_metCuad.map((c,i)=>{
-    const clienteOpts=_metClientesDisp.map(cl=>'<option value="'+cl+'" '+(c.cliente===cl?'selected':'')+'>'+cl.replace(/_/g,' ')+'</option>').join('');
-    const needsCliente=_metClientesDisp.length>1&&!c.cliente&&c.ton>0;
+    const _opts=(c.cliente&&!_metClientesDisp.includes(c.cliente))?[c.cliente].concat(_metClientesDisp):_metClientesDisp;
+    const clienteOpts=_opts.map(cl=>'<option value="'+cl+'" '+(c.cliente===cl?'selected':'')+'>'+contratoLabel(cl)+'</option>').join('');
+    const needsCliente=_metClientesMix.length>1&&!c.cliente&&c.ton>0;
     return `
     <div style="background:var(--bg3);border:1px solid var(--border);border-left:3px solid var(--green);border-radius:6px;padding:8px;margin-bottom:6px">
       <div style="display:flex;flex-wrap:wrap;gap:6px;align-items:flex-end">
@@ -3471,8 +3491,7 @@ function metRenderCuadrillas(){
           </select></div>
         <div class="fgrp" style="min-width:100px;flex:1"><label>Op.</label>
           <select onchange="_metCuad[${i}].tipo_op=this.value">
-            <option ${c.tipo_op==='Embarque'?'selected':''}>Embarque</option>
-            <option ${c.tipo_op==='Descarga'?'selected':''}>Descarga</option>
+            ${opcionesTipoOp(c.tipo_op)}
           </select></div>
         <div class="fgrp" style="min-width:140px;flex:2"><label>Producto</label>
           <select onchange="_metCuad[${i}].producto=this.value">
@@ -3481,11 +3500,11 @@ function metRenderCuadrillas(){
           </select></div>
         <div class="fgrp" style="min-width:60px;flex:.8"><label>Bodega</label>
           <input value="${c.bodega||''}" onchange="_metCuad[${i}].bodega=this.value" placeholder="1,2"></div>
-        ${_metClientesDisp.length>0?`<div class="fgrp" style="min-width:120px;flex:1.5"><label>Contrato${needsCliente?'<span style="color:var(--red);margin-left:4px;font-weight:700" title="Requerido">⚠</span>':''}</label>
+        <div class="fgrp" style="min-width:120px;flex:1.5"><label>Contrato${needsCliente?'<span style="color:var(--red);margin-left:4px;font-weight:700" title="Requerido">⚠</span>':''}</label>
           <select onchange="_metCuad[${i}].cliente=this.value;metRenderCuadrillas()" style="${needsCliente?'border:1.5px solid var(--red)':''}">
             <option value="">— Todos —</option>
             ${clienteOpts}
-          </select></div>`:''}
+          </select></div>
         <div class="fgrp" style="width:115px;flex-shrink:0"><label>Inicio</label>
           <input type="text" placeholder="HH:MM" maxlength="5" value="${c.hora_ini||''}" onchange="_metCuad[${i}].hora_ini=this.value"></div>
         <div class="fgrp" style="width:115px;flex-shrink:0"><label>Término</label>
@@ -6113,11 +6132,17 @@ function abrirModalMix(viajeId, escalaId){
   // Populate product select
   const sel=document.getElementById('mm-prod');
   sel.innerHTML='<option value="">— Seleccionar —</option>'+PRODUCTOS.map(p=>'<option value="'+p+'">'+p+'</option>').join('');
-  window._mmClienteSeleccionado = document.getElementById('mm-cliente').value;
-    document.getElementById('mm-form').style.display='none';
+  document.getElementById('mm-form').style.display='none';
   document.getElementById('mm-ton').value='';
   document.getElementById('mm-bodega').value='';
-  document.getElementById('mm-cliente').value=e.cliente||'';
+  // Poblar el selector de contratos desde el catálogo y dejarlo en el contrato de la escala
+  const selCli=document.getElementById('mm-cliente');
+  selCli.innerHTML='<option value="">— Sin contrato —</option>'+CONTRATOS.map(function(ct){return '<option value="'+ct.v+'">'+ct.t+'</option>';}).join('');
+  if(e.cliente&&!CONTRATOS.some(function(ct){return ct.v===e.cliente;})){
+    selCli.insertAdjacentHTML('beforeend','<option value="'+e.cliente+'">'+contratoLabel(e.cliente)+'</option>');
+  }
+  selCli.value=e.cliente||'';
+  window._mmClienteSeleccionado=selCli.value;
   mmRenderOps();
   document.getElementById('modal-mix').style.display='flex';
 }
@@ -6189,7 +6214,7 @@ function mmRenderOps(){
     const saldo=Math.max(0,prog-ejec);
     const pct=prog>0?Math.min(100,Math.round(ejec/prog*100)):0;
     const colPct=pct>=100?'var(--green)':pct>=50?'var(--yellow)':'var(--red)';
-    const tagCls=op.tipo_op==='Embarque'?'t-gr':'t-bl';
+    const tagCls=tagOpCls(op.tipo_op);
     const cLabel=(op.cliente||'').replace(/_/g,' ')||'—';
     html+=`<tr>
       <td><span class="tag ${tagCls}" style="font-size:10px">${op.tipo_op}</span></td>
@@ -6377,8 +6402,10 @@ function mmGuardarTodo(){
   if(vi<0)return;
   const ei=(viajes[vi].escalas||[]).findIndex(x=>x.id===_mmEscalaId);
   if(ei<0)return;
-  viajes[vi].escalas[ei].operaciones=[..._mmOps];
-  viajes[vi].escalas[ei].cliente=window._mmClienteSeleccionado||document.getElementById('mm-cliente').value;
+  const _cliEsc=(document.getElementById('mm-cliente')||{}).value||window._mmClienteSeleccionado||'';
+  // Si la escala tiene contrato y hay operaciones sin contrato, heredarlo (evita mix sin contratos)
+  viajes[vi].escalas[ei].operaciones=_mmOps.map(function(o){return (!o.cliente&&_cliEsc)?{...o,cliente:_cliEsc}:{...o};});
+  viajes[vi].escalas[ei].cliente=_cliEsc;
   VA.update(viajes[vi]);
   cerrarModalMix();
   showAlert('✅ Mix de carga guardado para '+viajes[vi].escalas[ei].puerto,'ok');
